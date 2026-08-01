@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wenn-Trainer — DeutschLab</title>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --paper:   #E4D9C0;
+      --card-bg: #F0E8D4;
+      --ink:     #2A2118;
+      --orange:  #B85C00;
+      --green:   #5C6B2E;
+      --tan:     #C4A97A;
+      --muted:   #7A6B59;
+      --cream:   #E4D9C0;
+      --red:     #c0392b;
+      --tg-blue: #005CB8;
+      --rose:    #C4607A;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Barlow', sans-serif;
+      background: var(--paper);
+      min-height: 100vh;
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: var(--ink);
+      padding: 0 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-top {
+      display: flex;
+      align-items: stretch;
+      justify-content: space-between;
+      border-bottom: 3px solid var(--orange);
+    }
+    .app-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(1.85rem, 7vw, 2.9rem);
+      font-weight: 800;
+      color: var(--paper);
+      letter-spacing: -1px;
+      text-transform: uppercase;
+      line-height: 1;
+      padding: 0.55rem 0;
+    }
+    .app-title span { color: var(--orange); }
+
+    .header-right {
+      display: flex;
+      align-items: stretch;
+    }
+    .progress-badge {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: var(--orange);
+      padding: 0 1rem;
+      display: flex;
+      align-items: center;
+    }
+
+    /* ── MODE TABS ── */
+    .mode-row {
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+      padding: 0.5rem 0;
+      gap: 0;
+    }
+    .mode-row::-webkit-scrollbar { display: none; }
+    .mode-tab {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 4px 16px;
+      border: 1.5px solid var(--tan);
+      background: transparent;
+      color: var(--tan);
+      cursor: pointer;
+      white-space: nowrap;
+      margin-right: -1.5px;
+      transition: all 0.12s;
+    }
+    .mode-tab.active {
+      background: var(--orange);
+      color: var(--paper);
+      border-color: var(--orange);
+      z-index: 1;
+      position: relative;
+    }
+
+    /* ── MAIN ── */
+    .main {
+      flex: 1;
+      padding: 1.5rem;
+      max-width: 640px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* ── BTN ── */
+    .btn {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.75rem 1.2rem;
+      border: 1.5px solid var(--ink);
+      background: transparent;
+      color: var(--ink);
+      cursor: pointer;
+      transition: background 0.12s, color 0.12s;
+      white-space: nowrap;
+    }
+    .btn:hover  { background: var(--tan); }
+    .btn-primary { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+    .btn-primary:hover { background: var(--orange); border-color: var(--orange); }
+    .btn-green { color: var(--green); border-color: var(--green); }
+    .btn-green:hover { background: var(--green); color: var(--paper); }
+    .btn-reset { color: var(--red); border-color: var(--red); }
+    .btn-reset:hover { background: var(--red); color: var(--paper); }
+    .btn-reset.confirming { background: var(--red); color: var(--paper); }
+    .btn-rate { flex: 1; font-size: 0.85rem; padding: 0.7rem 0.4rem; }
+    .btn-rate-schwer { color: var(--red); border-color: var(--red); }
+    .btn-rate-schwer:hover, .btn-rate-schwer:active { background: var(--red); color: var(--paper); }
+    .btn-rate-mittel { color: var(--muted); border-color: var(--tan); }
+    .btn-rate-mittel:hover, .btn-rate-mittel:active { background: var(--tan); color: var(--ink); }
+    .btn-rate-leicht { color: var(--green); border-color: var(--green); }
+    .btn-rate-leicht:hover, .btn-rate-leicht:active { background: var(--green); color: var(--paper); }
+    .rating-row {
+      display: flex;
+      gap: 0.5rem;
+      width: 100%;
+    }
+    .due-note {
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+      text-align: center;
+    }
+
+    .controls-row {
+      display: flex;
+      gap: 2px;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+    }
+    .controls-row .btn-primary { flex: 2; }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      height: 3px;
+      background: rgba(42,33,24,0.12);
+      margin-bottom: 1.25rem;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(to right, var(--orange), #8B3A00);
+      transition: width 0.4s ease;
+    }
+
+    /* ── EYEBROW ── */
+    .back-nav {
+      display: none;
+      justify-content: flex-start;
+      margin-bottom: 0.5rem;
+    }
+    .back-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 0.25rem 0.1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: color 0.12s;
+    }
+    .back-btn:hover { color: var(--ink); }
+
+    .card-eyebrow {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+      padding-left: 2px;
+    }
+    .eyebrow-wenn  { color: var(--orange); }
+    .eyebrow-haupt { color: var(--green); }
+
+    /* ── FLIP CARD ── */
+    .card-arena {
+      perspective: 1200px;
+      width: 100%;
+      min-height: 300px;
+      cursor: pointer;
+      touch-action: pan-y;
+      user-select: none;
+      -webkit-user-select: none;
+      margin-bottom: 0.75rem;
+    }
+    .card {
+      width: 100%; height: 100%; min-height: 300px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.55s cubic-bezier(0.4,0,0.2,1);
+    }
+    .card.no-anim { transition: none !important; }
+    .card.flipped { transform: rotateY(180deg); }
+
+    .card-face {
+      position: absolute; inset: 0; min-height: 300px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      background: var(--card-bg);
+      display: flex; flex-direction: column;
+      align-items: flex-start; justify-content: center;
+      padding: 1.5rem 1.5rem 1.5rem 1.75rem;
+    }
+    .card-front { border-left: 4px solid var(--orange); }
+    .card-back  { transform: rotateY(180deg); border-left: 4px solid var(--green); }
+
+    /* direction pill on front */
+    .direction-pill {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      margin-bottom: 0.75rem;
+    }
+    .pill-wenn  { background: var(--orange); color: var(--paper); }
+    .pill-haupt { background: var(--green);  color: var(--paper); }
+
+    .card-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .card-badge-row .direction-pill { margin-bottom: 0; }
+    .level-badge {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 2px 8px;
+      border: 1.5px solid var(--tan);
+      color: var(--muted);
+      background: transparent;
+    }
+
+    /* prompt text on front */
+    .prompt-stem {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(1.6rem, 6.5vw, 2.75rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+      color: var(--ink);
+      margin-bottom: 0.75rem;
+    }
+    .prompt-stem em {
+      font-style: normal;
+      color: var(--orange);
+    }
+    .prompt-dots {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(1.45rem, 5.5vw, 2.35rem);
+      font-weight: 700;
+      color: var(--tan);
+      letter-spacing: 2px;
+      margin-bottom: 1rem;
+    }
+    .prompt-instruction {
+      font-size: 1rem;
+      color: var(--muted);
+      font-style: italic;
+      border-left: 3px solid var(--tan);
+      padding: 0.4rem 0.75rem;
+      background: rgba(196,169,122,0.1);
+      line-height: 1.5;
+    }
+
+    /* back card content */
+    .back-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 0.5rem;
+    }
+    .back-label-sub {
+      font-family: 'Barlow', sans-serif;
+      font-size: 0.8rem;
+      font-style: italic;
+      color: var(--muted);
+      margin-top: -0.35rem;
+      margin-bottom: 0.75rem;
+    }
+    .solution-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(1.25rem, 5vw, 1.95rem);
+      font-weight: 800;
+      line-height: 1.25;
+      color: var(--ink);
+      margin-bottom: 0.85rem;
+      letter-spacing: -0.3px;
+    }
+    .solution-text em {
+      font-style: normal;
+      color: var(--green);
+    }
+    .tip-box {
+      border-left: 3px solid var(--tan);
+      padding: 0.5rem 0.75rem;
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.55;
+      background: rgba(196,169,122,0.12);
+      width: 100%;
+    }
+    .tip-box strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+    .tip-box .ua-note {
+      display: block;
+      margin-top: 0.35rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    /* card footer */
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    .swipe-hint {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .counter-text {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── LANDING SCREEN ── */
+    .landing { display: flex; flex-direction: column; gap: 2px; }
+    .landing-hero {
+      background: var(--card-bg);
+      border-left: 4px solid var(--orange);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 2px;
+    }
+    .landing-headline {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: clamp(1.85rem, 9vw, 3.4rem);
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1;
+      letter-spacing: -1px;
+      margin-bottom: 0.5rem;
+    }
+    .landing-headline span { color: var(--orange); }
+    .landing-sub {
+      font-size: 1.1rem;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 480px;
+    }
+    .landing-stats {
+      display: flex;
+      gap: 2px;
+    }
+    .landing-stat {
+      flex: 1;
+      background: var(--card-bg);
+      border-left: 4px solid var(--tan);
+      padding: 0.75rem 1rem;
+    }
+    .landing-stat-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 2.1rem; font-weight: 800;
+      color: var(--ink); line-height: 1;
+    }
+    .landing-stat-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.9rem; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted); margin-top: 2px;
+    }
+    .landing-how {
+      background: var(--card-bg);
+      border-left: 4px solid var(--green);
+      padding: 1rem 1.25rem;
+    }
+    .landing-how-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--green); margin-bottom: 0.5rem;
+    }
+    .how-steps { display: flex; flex-direction: column; gap: 0.35rem; }
+    .how-step {
+      font-size: 1rem; color: var(--ink); line-height: 1.4;
+      display: flex; gap: 0.6rem; align-items: flex-start;
+    }
+    .how-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.75rem; font-weight: 800;
+      color: var(--orange);
+      background: rgba(184,92,0,0.1);
+      padding: 1px 5px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ── SECTION WRAP ── */
+    .section-wrap { display: none; flex-direction: column; }
+    .section-wrap.active { display: flex; }
+
+    /* ── DONE SCREEN ── */
+    .done-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      padding-top: 0.5rem;
+    }
+    .done-screen.active { display: flex; }
+    .done-big-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 6.2rem; font-weight: 800;
+      color: var(--orange); line-height: 1;
+    }
+    .done-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.85rem; font-weight: 800; letter-spacing: -0.5px;
+      color: var(--ink); text-transform: uppercase;
+      margin-bottom: 0.25rem;
+    }
+    .done-sub {
+      font-size: 0.95rem; color: var(--muted);
+      text-align: center; line-height: 1.55;
+      max-width: 400px; margin-bottom: 0.5rem;
+    }
+    .done-btn-row {
+      display: flex; gap: 2px; width: 100%; margin-top: 0.5rem; flex-wrap: wrap;
+    }
+    .done-btn-row .btn { flex: 1; min-width: 120px; }
+
+    .done-stats {
+      display: flex; gap: 6px; flex-wrap: wrap;
+      justify-content: center; margin-bottom: 0.75rem;
+    }
+    .stat-chip {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 0.04em;
+      padding: 0.3rem 0.7rem;
+      border: 1.5px solid var(--tan);
+      white-space: nowrap;
+    }
+    .stat-chip.stat-schwer { color: var(--red); border-color: var(--red); }
+    .stat-chip.stat-mittel { color: var(--muted); border-color: var(--tan); }
+    .stat-chip.stat-leicht { color: var(--green); border-color: var(--green); }
+
+    /* social CTA */
+    .social-cta-header {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.16em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 4px;
+      width: 100%; text-align: center;
+    }
+    .social-cta-row {
+      display: flex; gap: 2px; width: 100%;
+    }
+    .btn-social {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      gap: 0.5rem;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.9rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.7rem 1rem;
+      text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .btn-social:hover { opacity: 0.85; }
+    .btn-tg { background: var(--tg-blue); color: #fff; }
+    .btn-ig { background: #E1306C; color: #fff; }
+    .btn-th { background: var(--ink); color: var(--paper); }
+
+    /* ── THEORY MODAL ── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(42,33,24,0.7);
+      z-index: 200; align-items: center; justify-content: center; padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--paper);
+      max-width: 520px; width: 100%;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-header {
+      background: var(--ink);
+      padding: 1rem 1.25rem;
+      display: flex; align-items: flex-start; justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 3px solid var(--orange);
+    }
+    .modal-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 2rem; font-weight: 800; color: var(--paper);
+      letter-spacing: -0.5px; text-transform: uppercase;
+    }
+    .modal-subtitle {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.2rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--tan); margin-top: 2px;
+    }
+    .modal-close {
+      background: transparent; border: 1.5px solid var(--tan);
+      color: var(--tan); font-size: 1.05rem; cursor: pointer;
+      padding: 4px 10px; font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700; flex-shrink: 0;
+    }
+    .modal-close:hover { background: var(--orange); border-color: var(--orange); color: var(--paper); }
+    .modal-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+    .rule-block { border-left: 3px solid var(--tan); padding: 0.5rem 0.75rem; }
+    .rule-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--orange); margin-bottom: 2px;
+    }
+    .rule-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.1rem; font-weight: 800; color: var(--ink);
+      text-transform: uppercase; letter-spacing: -0.2px; margin-bottom: 4px;
+    }
+    .rule-text { font-size: 1rem; color: var(--ink); line-height: 1.55; margin-bottom: 4px; }
+    .rule-example {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.1rem; font-weight: 700; color: var(--muted);
+      letter-spacing: 0.04em; background: rgba(42,33,24,0.05); padding: 4px 8px;
+    }
+    .rule-example .hi { color: var(--orange); }
+
+    /* ── FOOTER ── */
+    .site-footer {
+      background: var(--ink);
+      color: var(--tan);
+      padding: 1.75rem 1.5rem 1.5rem;
+      margin-top: auto;
+      border-top: 3px solid var(--orange);
+    }
+    .footer-inner { max-width: 600px; margin: 0 auto; }
+    .footer-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.25rem;
+    }
+    .footer-logo {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--paper);
+      letter-spacing: -0.5px;
+      text-transform: uppercase;
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+    .footer-logo span { color: var(--orange); }
+    .footer-tagline {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.55;
+      max-width: 240px;
+    }
+    .footer-divider { height: 1px; background: #3a2f25; margin-bottom: 1.1rem; }
+    .footer-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .footer-social { display: flex; align-items: center; gap: 0.6rem; }
+    .social-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .social-links { display: flex; gap: 0.3rem; }
+    .social-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      padding: 0.3rem 0.65rem;
+      border: 1.5px solid #3a2f25;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color 0.12s, border-color 0.12s;
+    }
+    .social-btn:hover { color: var(--paper); border-color: var(--paper); }
+    .social-btn.telegram { color: var(--tg-blue); }
+    .social-btn.telegram:hover { border-color: var(--tg-blue); }
+    .social-btn.threads { color: var(--orange); }
+    .social-btn.threads:hover { border-color: var(--orange); }
+    .social-btn.instagram { color: var(--rose); }
+    .social-btn.instagram:hover { border-color: var(--rose); }
+    .footer-copy {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--tan);
+    }
+    @media (max-width: 480px) {
+      .footer-bottom { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="app-title">Wenn-<span>Trainer</span></div>
+    <div class="header-right">
+      <div class="progress-badge" id="progressBadge" style="display:none">1 / 20</div>
+    </div>
+  </div>
+  <div class="mode-row">
+    <button class="mode-tab active" id="tabPraesens" onclick="switchMode('praesens')">Präsens</button>
+    <button class="mode-tab" id="tabPerfekt" onclick="switchMode('perfekt')">Perfekt</button>
+    <button class="mode-tab" id="tabKonjunktiv2" onclick="switchMode('konjunktiv2')">Konjunktiv 2</button>
+    <button class="mode-tab" id="tabModalverben" onclick="switchMode('modalverben')">Modalverben</button>
+    <button class="mode-tab" id="tabGemischt" onclick="switchMode('gemischt')">Gemischt</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- CONTROLS -->
+  <div class="due-note" id="dueNote"></div>
+  <div class="controls-row" id="controlsRow">
+    <button class="btn btn-green" onclick="openTheory()">Regeln</button>
+    <button class="btn btn-primary" id="startBtn" onclick="startSession()">Training starten →</button>
+  </div>
+
+  <!-- PROGRESS BAR -->
+  <div class="progress-wrap" style="display:none" id="progressWrap">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+
+  <!-- LANDING -->
+  <div id="landingScreen" class="landing">
+    <div class="landing-hero">
+      <div class="landing-headline">Wenn <span>ich</span> Zeit habe…</div>
+      <div class="landing-sub">Wenn-Sätze laut 📢 produzieren — im Alltag, im Job, beim Hobby. Karte umdrehen, Lösung checken, weitermachen.</div>
+    </div>
+    <div class="landing-stats">
+      <div class="landing-stat">
+        <div class="landing-stat-num" id="statPairs">8</div>
+        <div class="landing-stat-label">Satzpaare</div>
+      </div>
+      <div class="landing-stat">
+        <div class="landing-stat-num">2</div>
+        <div class="landing-stat-label">Richtungen</div>
+      </div>
+      <div class="landing-stat">
+        <div class="landing-stat-num">5</div>
+        <div class="landing-stat-label">Modi</div>
+      </div>
+    </div>
+    <div class="landing-how">
+      <div class="landing-how-title">So funktioniert es</div>
+      <div class="how-steps">
+        <div class="how-step"><span class="how-num">1</span><span>Du siehst einen Satzanfang — entweder mit <strong>„Wenn"</strong> oder als Hauptsatz.</span></div>
+        <div class="how-step"><span class="how-num">2</span><span>Ergänze den Satz laut — bitte wirklich laut 📢 sprechen, nicht nur denken!</span></div>
+        <div class="how-step"><span class="how-num">3</span><span>Karte umdrehen: Lösungsvorschlag + kurzer Grammatik-Tipp auf der Rückseite.</span></div>
+        <div class="how-step"><span class="how-num">4</span><span>Schwer / Mittel / Leicht wählen — danach zeigt dir das Tool die Karte genau zur richtigen Zeit wieder.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLIP SECTION -->
+  <div id="flipSection" class="section-wrap">
+    <div class="back-nav" id="backNav">
+      <button class="back-btn" onclick="prevCard()">← Zurück</button>
+    </div>
+    <div class="card-eyebrow" id="cardEyebrow">Ergänze den Satz laut</div>
+    <div class="card-arena" id="cardArena" onclick="flipCard()">
+      <div class="card" id="theCard">
+        <!-- FRONT -->
+        <div class="card-face card-front">
+          <div class="card-badge-row">
+            <div class="direction-pill" id="directionPill">→ Wenn-Satz</div>
+            <div class="level-badge" id="levelBadge">💬</div>
+          </div>
+          <div class="prompt-stem" id="promptStem"></div>
+          <div class="prompt-dots">…</div>
+          <div class="prompt-instruction" id="promptInstruction">Sag den Satz laut zu Ende. Dann umdrehen.</div>
+        </div>
+        <!-- BACK -->
+        <div class="card-face card-back">
+          <div class="back-label">Lösungsvorschlag</div>
+          <div class="back-label-sub">Nur ein Beispiel — andere richtige Varianten sind auch okay.</div>
+          <div class="solution-text" id="solutionText"></div>
+          <div class="tip-box" id="tipBox"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="swipe-hint" id="flipHint">Tippen zum Umdrehen 🔄</span>
+      <div class="rating-row" id="ratingRow" style="display:none">
+        <button class="btn btn-rate btn-rate-schwer" onclick="rateAndNext(event, 'schwer')">😓 Schwer</button>
+        <button class="btn btn-rate btn-rate-mittel" onclick="rateAndNext(event, 'mittel')">🙂 Mittel</button>
+        <button class="btn btn-rate btn-rate-leicht" onclick="rateAndNext(event, 'leicht')">😎 Leicht</button>
+      </div>
+    </div>
+    <div class="counter-text" id="counterText"></div>
+  </div>
+
+  <!-- DONE SCREEN -->
+  <div class="done-screen" id="doneScreen">
+    <div class="done-big-num" id="doneNum">20</div>
+    <div class="done-title">Geschafft!</div>
+    <div class="done-sub" id="doneSub">Gut gemacht. Wenn-Sätze brauchen Wiederholung — nochmal durch den Stapel oder anderen Modus probieren.</div>
+    <div class="done-stats" id="doneStats"></div>
+    <div id="socialCta" style="display:none; width:100%">
+      <div class="social-cta-header">Mehr Übungen &amp; Tipps</div>
+      <div class="social-cta-row">
+        <a class="btn-social btn-tg" href="https://t.me/deutsch_lab_space" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.447 1.394c-.16.16-.295.295-.605.295l.213-3.053 5.56-5.023c.242-.213-.054-.333-.373-.12L7.04 13.625l-2.95-.924c-.64-.203-.658-.64.136-.954l11.566-4.458c.537-.194 1.006.131.832.932z"/></svg>
+          Telegram
+        </a>
+        <a class="btn-social btn-th" href="https://threads.net/@tut_fantastisch" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 192 192" fill="currentColor"><path d="M141.537 88.988a66.667 66.667 0 0 0-2.518-1.143c-1.482-27.307-16.403-42.94-41.457-43.1h-.34c-14.986 0-27.449 6.396-35.12 18.05l13.324 9.152c5.356-8.136 13.674-12.108 23.88-12.108h.229c9.204.06 16.175 2.739 20.727 7.965 3.291 3.73 5.496 8.926 6.579 15.495a97.94 97.94 0 0 0-14.092-.822c-14.08 0-25.958 3.769-33.585 10.603-8.043 7.203-12.141 17.412-11.469 29.167.711 12.508 6.706 22.571 16.879 28.35 8.568 4.929 19.557 7.286 30.604 6.616 14.95-.918 27.476-6.667 36.242-16.63 7.125-8.098 11.449-18.659 12.862-31.382 7.706 4.648 13.397 10.806 16.558 18.237 5.186 12.15 5.5 32.083-10.175 47.758-13.818 13.818-30.459 19.812-55.612 20-27.966-.2-49.144-9.16-62.938-26.63C19.708 139.08 13.586 117.42 13.354 90.05c.232-27.37 6.354-49.03 18.196-64.377C45.344 8.178 66.522-.782 94.488-1c28.172.22 49.847 9.234 64.416 26.78 7.188 8.723 12.73 19.755 16.345 32.515l15.657-4.196c-4.26-15.254-11.043-28.673-20.153-39.675C153.955 10.463 128.354-.354 94.716-.6h-.255C60.786-.354 35.591 10.463 19.135 32.316 4.457 52.25-2.233 79.3-2.498 90.05v.15c.265 10.75 6.955 37.8 21.633 57.684 16.456 21.853 41.651 32.67 74.94 32.906h.255c29.604-.208 50.8-8.058 68.213-25.47 22.63-22.63 21.98-50.474 14.456-67.79-5.332-12.434-15.454-22.082-35.462-28.542zm-30.863 46.314c-6.166 3.611-13.695 5.468-21.792 5.468-1.287 0-2.581-.056-3.835-.168-9.965-.893-17.34-6.107-19.773-13.827-1.342-4.281-.906-8.582 1.228-12.107 3.728-6.117 11.47-9.491 21.698-9.491 3.606 0 7.247.362 10.82 1.077 5.482 1.097 10.23 2.946 14.106 5.495l.328.215c-1.174 10.61-2.78 21.02-2.78 23.338z"/></svg>
+          Threads
+        </a>
+        <a class="btn-social btn-ig" href="https://instagram.com/tut_fantastisch" target="_blank">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          Instagram
+        </a>
+      </div>
+    </div>
+    <div class="done-btn-row">
+      <button class="btn btn-green" onclick="restartSession()">↺ Nochmal</button>
+      <button class="btn btn-green" onclick="shuffleAndRestart()">🔀 Mischen</button>
+    </div>
+  </div>
+
+</div><!-- /.main -->
+
+<!-- THEORY MODAL -->
+<div class="modal-overlay" id="theoryModal" onclick="closeTheoryOutside(event)">
+  <div class="modal" id="theoryModalEl">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Wenn-Satz — Regeln</div>
+        <div class="modal-subtitle">Das Wichtigste auf einen Blick 👀</div>
+      </div>
+      <button class="modal-close" onclick="closeTheory()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="rule-block">
+        <div class="rule-num">Regel 1</div>
+        <div class="rule-title">Wenn: Bedingung oder Wiederholung</div>
+        <div class="rule-text"><em style="color:#B85C00; font-weight: 700; font-size: 1.1rem;">Wenn</em> verbindet eine Bedingung oder ein sich wiederholendes Ereignis mit dem Hauptsatz. Im Präsens und in der Zukunft passt 'wenn' immer.<br>In der Vergangenheit passt 'wenn' bei Dingen, die sich wiederholt haben: <em>immer</em>, <em>oft</em> oder <em>jedes Mal</em>.<br>🟠 Für ein einmaliges Ereignis in der Vergangenheit benutzt man <em>als</em>.</div>
+        <div class="rule-example"><span class="hi">🟢 Wenn</span> ich Zeit habe, gehe ich schwimmen. (Präsens)<br>🟢 Immer <span class="hi">wenn</span> ich früher Überstunden hatte, war ich abends müde. (wiederholt)<br><span class="hi">🟠 Als</span> ich das erste Mal in diesem Büro war, hat mir alles gefallen. (einmalig)</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-num">Regel 2</div>
+        <div class="rule-title">Verb ans Ende des Wenn-Satzes</div>
+        <div class="rule-text">Im Nebensatz mit <em style="color:#B85C00; font-weight: 700; font-size: 1.2rem;">wenn</em> steht das konjugierte Verb ganz am Ende. Idealerweise :)</div>
+        <div class="rule-example">✓ Wenn ich nach Hause <span class="hi">gehe</span>, höre ich Musik.<br>✓ Ich höre Musik, wenn ich nach Hause <span class="hi">gehe</span>.</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-num">Regel 3</div>
+        <div class="rule-title">Komma zwischen den Teilsätzen</div>
+        <div class="rule-text">Wenn-Satz und Hauptsatz werden immer durch ein Komma getrennt — egal in welcher Reihenfolge.</div>
+        <div class="rule-example">Wenn es regnet<span class="hi">,</span> bleibe ich zu Hause.<br>Ich bleibe zu Hause<span class="hi">,</span> wenn es regnet.</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-num">Regel 4</div>
+        <div class="rule-title">Inversion im Hauptsatz</div>
+        <div class="rule-text">Wenn der Wenn-Satz vorne steht, beginnt der Hauptsatz mit dem Verb.</div>
+        <div class="rule-example">Wenn es regnet, <span class="hi">bleibe ich</span> zu Hause.</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-num">Regel 5</div>
+        <div class="rule-title">Perfekt im Wenn-Satz: haben/sein ans Ende, Partizip II davor</div>
+        <div class="rule-text">Im Perfekt gibt es zwei Verbteile. Im Wenn-Satz stehen beide am Ende — zuerst das Partizip II, direkt danach <strong>haben</strong> oder <strong>sein</strong>.</div>
+        <div class="rule-example">Wenn ich eine Nachricht <span class="hi">gelesen habe</span>, vergesse ich manchmal darauf zu antworten.<br>Wenn ich früh <span class="hi">aufgestanden bin</span>, gehe ich joggen.</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-num">Regel 6</div>
+        <div class="rule-title">Konjunktiv II: Stammform oder würde-Form?</div>
+        <div class="rule-text">Für Wünsche und unreale Situationen: häufige Verben nehmen die Stammform (wäre, hätte, könnte, müsste, gäbe). Die meisten anderen Verben bilden den Konjunktiv II ruhig mit <strong>würde + Infinitiv</strong>.</div>
+        <div class="rule-example">Wenn ich Zeit <span class="hi">hätte</span>, würde ich mitkommen.<br>Wenn ich zu Hause <span class="hi">wäre</span>, würde ich dich anrufen.</div>
+      </div>
+      <div class="rule-block">
+        <div class="rule-num">Regel 7</div>
+        <div class="rule-title">Modalverben im Wenn-Satz: ganz ans Ende</div>
+        <div class="rule-text">Im Wenn-Satz steht das Modalverb immer ganz am Ende. Infinitiv — davor, das Modalverb bleibt das letzte Wort.</div>
+        <div class="rule-example">Wenn ich später <span class="hi">kommen kann</span>, schreibe ich dir.<br>Wenn du mir <span class="hi">helfen willst</span>, freue ich mich sehr.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <span class="footer-logo">Deutsch<span>Lab</span></span>
+        <p class="footer-tagline">Deutsch üben – bewusst &amp; systematisch, bis es automatisch leicht fällt.</p>
+      </div>
+    </div>
+    <div class="footer-divider"></div>
+    <div class="footer-bottom">
+      <div class="footer-social">
+        <span class="social-label">Mehr</span>
+        <div class="social-links">
+          <a href="https://t.me/deutsch_lab_space" target="_blank" rel="noopener" class="social-btn telegram">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+            Telegram
+          </a>
+          <a href="https://threads.net/@tut_fantastisch" target="_blank" rel="noopener" class="social-btn threads">
+            <svg width="14" height="14" viewBox="0 0 192 192" fill="currentColor"><path d="M141.537 88.988a66.667 66.667 0 0 0-2.518-1.143c-1.482-27.307-16.403-42.94-41.457-43.1h-.34c-14.986 0-27.449 6.396-35.12 18.05l13.324 9.152c5.356-8.136 13.674-12.108 23.88-12.108h.229c9.204.06 16.175 2.739 20.727 7.965 3.291 3.73 5.496 8.926 6.579 15.495a97.94 97.94 0 0 0-14.092-.822c-14.08 0-25.958 3.769-33.585 10.603-8.043 7.203-12.141 17.412-11.469 29.167.711 12.508 6.706 22.571 16.879 28.35 8.568 4.929 19.557 7.286 30.604 6.616 14.95-.918 27.476-6.667 36.242-16.63 7.125-8.098 11.449-18.659 12.862-31.382 7.706 4.648 13.397 10.806 16.558 18.237 5.186 12.15 5.5 32.083-10.175 47.758-13.818 13.818-30.459 19.812-55.612 20-27.966-.2-49.144-9.16-62.938-26.63C19.708 139.08 13.586 117.42 13.354 90.05c.232-27.37 6.354-49.03 18.196-64.377C45.344 8.178 66.522-.782 94.488-1c28.172.22 49.847 9.234 64.416 26.78 7.188 8.723 12.73 19.755 16.345 32.515l15.657-4.196c-4.26-15.254-11.043-28.673-20.153-39.675C153.955 10.463 128.354-.354 94.716-.6h-.255C60.786-.354 35.591 10.463 19.135 32.316 4.457 52.25-2.233 79.3-2.498 90.05v.15c.265 10.75 6.955 37.8 21.633 57.684 16.456 21.853 41.651 32.67 74.94 32.906h.255c29.604-.208 50.8-8.058 68.213-25.47 22.63-22.63 21.98-50.474 14.456-67.79-5.332-12.434-15.454-22.082-35.462-28.542zm-30.863 46.314c-6.166 3.611-13.695 5.468-21.792 5.468-1.287 0-2.581-.056-3.835-.168-9.965-.893-17.34-6.107-19.773-13.827-1.342-4.281-.906-8.582 1.228-12.107 3.728-6.117 11.47-9.491 21.698-9.491 3.606 0 7.247.362 10.82 1.077 5.482 1.097 10.23 2.946 14.106 5.495l.328.215c-1.174 10.61-2.78 21.02-2.78 23.338z"/></svg>
+            Threads
+          </a>
+          <a href="https://instagram.com/tut_fantastisch" target="_blank" rel="noopener" class="social-btn instagram">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+            Instagram
+          </a>
+        </div>
+      </div>
+      <p class="footer-copy">© 2026 Deutsch-Training mit Ella D.</p>
+    </div>
+  </div>
+</footer>
+
+<script id="cardData" type="application/json">
+{
+  "praesens": [
+    {
+      "wenn": { "stem": "Wenn ich abends nach Hause komme,", "instruction": "Wie geht der Hauptsatz weiter? Verb direkt nach dem Komma.", "solution": "Wenn ich abends nach Hause komme, koche ich mir etwas Warmes.", "tip": "<strong>Inversion!</strong> Nach dem Wenn-Satz kommt zuerst das Verb: komme ich.", "level": "A2" },
+      "haupt": { "stem": "Ich rufe meine Mutter an,", "instruction": "Ergänze mit einem Wenn-Satz. Verb ans Ende!", "solution": "Ich rufe meine Mutter an, wenn ich abends Zeit habe.", "tip": "<strong>Verb ans Ende!</strong> <em>habe</em> steht ganz am Schluss des Wenn-Satzes.", "level": "A2" }
+    },
+    {
+      "wenn": { "stem": "Wenn ich ins Büro komme,", "instruction": "Was machst du zuerst? Hauptsatz mit Inversion.", "solution": "Wenn ich ins Büro komme, trinke ich zuerst einen Kaffee ☕️.", "tip": "<strong>Inversion:</strong> trinke ich — das Verb steht direkt nach dem Komma.", "level": "A2" },
+      "haupt": { "stem": "Ich beantworte zuerst die wichtigsten E-Mails,", "instruction": "In welchem Fall? Wenn-Satz ergänzen.", "solution": "Ich beantworte zuerst die wichtigsten E-Mails, wenn ich morgens im Büro ankomme.", "tip": "<strong>Trennbares Verb:</strong> ankomme — das Verb bleibt im Nebensatz zusammen und wandert ans Ende.", "level": "A2" }
+    },
+    {
+      "wenn": { "stem": "Wenn das Wetter schön ist,", "instruction": "Was machst du dann? Hauptsatz mit Inversion.", "solution": "Wenn das Wetter schön ist, gehe ich joggen.", "tip": "<strong>Inversion:</strong> gehe ich — das Verb steht vor dem Subjekt.", "level": "A2" },
+      "haupt": { "stem": "Ich spiele abends Gitarre,", "instruction": "In welchem Fall? Wenn-Satz mit Verb am Ende.", "solution": "Ich spiele abends Gitarre, wenn ich Zeit dafür finde.", "tip": "<strong>Verb ans Ende:</strong> finde — ganz am Schluss des Wenn-Satzes.", "level": "A2" }
+    },
+    {
+      "wenn": { "stem": "Wenn meine Nachbarin im Urlaub ist,", "instruction": "Was machst du für sie? Hauptsatz mit Inversion.", "solution": "Wenn meine Nachbarin im Urlaub ist, gieße ich ihre Blumen.", "tip": "<strong>Inversion:</strong> gieße ich — direkt nach dem Komma steht das Verb.", "level": "B1" },
+      "haupt": { "stem": "Ich mache abends das Fenster zu,", "instruction": "In welchem Fall? Wenn-Satz ergänzen.", "solution": "Ich mache abends das Fenster zu, wenn es draußen kalt wird 🥶.", "tip": "<strong>Verb ans Ende:</strong> wird — im Wenn-Satz steht das konjugierte Verb immer ganz hinten.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Wenn ich Zeit finde,", "instruction": "Was machst du gern? Hauptsatz mit Inversion.", "solution": "Wenn ich Zeit finde, lese ich ein spannendes Buch.", "tip": "<strong>Inversion:</strong> lese ich — das Verb kommt direkt nach dem Komma.", "level": "A2" },
+      "haupt": { "stem": "Wir treffen uns im Park,", "instruction": "In welchem Fall? Wenn-Satz ergänzen.", "solution": "Wir treffen uns im Park, wenn die Sonne scheint 🌞.", "tip": "<strong>Verb ans Ende:</strong> scheint — ganz am Schluss des Nebensatzes.", "level": "A2" }
+    },
+    {
+      "wenn": { "stem": "Wenn ich einkaufen gehe,", "instruction": "Was machst du vorher? Hauptsatz mit Inversion.", "solution": "Wenn ich einkaufen gehe, schreibe ich vorher eine Liste.", "tip": "<strong>Inversion:</strong> schreibe ich — Verb direkt nach dem Komma.", "level": "A2" },
+      "haupt": { "stem": "Ich putze am Wochenende die Wohnung,", "instruction": "In welchem Fall? Wenn-Satz ergänzen.", "solution": "Ich putze am Wochenende die Wohnung, wenn jemand zu Besuch kommt.", "tip": "<strong>Verb ans Ende:</strong> kommt — schließt den Wenn-Satz ab.", "level": "A2" }
+    },
+    {
+      "wenn": { "stem": "Wenn ich ins Fitnessstudio gehe,", "instruction": "Was machst du meistens? Hauptsatz mit Inversion.", "solution": "Wenn ich ins Fitnessstudio gehe, trainiere ich meistens eine Stunde.", "tip": "<strong>Inversion:</strong> trainiere ich — direkt nach dem Komma.", "level": "B1" },
+      "haupt": { "stem": "Ich koche gern neue Rezepte,", "instruction": "In welchem Fall? Wenn-Satz ergänzen.", "solution": "Ich koche gern neue Rezepte, wenn ich ein freies Wochenende habe.", "tip": "<strong>Verb ans Ende:</strong> habe — am Schluss des Wenn-Satzes.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Wenn mein Chef eine Frage stellt,", "instruction": "Was machst du? Hauptsatz mit Inversion.", "solution": "Wenn mein Chef eine Frage stellt, antworte ich möglichst genau.", "tip": "<strong>Inversion:</strong> antworte ich — Verb direkt nach dem Komma.", "level": "B1" },
+      "haupt": { "stem": "Ich mache mir Notizen,", "instruction": "In welchem Fall? Wenn-Satz ergänzen.", "solution": "Ich mache mir Notizen ✍️, wenn ich in einem Meeting sitze.", "tip": "<strong>Verb ans Ende:</strong> sitze — schließt den Nebensatz ab.", "level": "B1" }
+    }
+  ],
+  "perfekt": [
+    {
+      "wenn": { "stem": "Jedes Mal, wenn ich das Fenster aufgemacht habe,", "instruction": "Was ist dann passiert? Hauptsatz im Perfekt.", "solution": "Jedes Mal, wenn ich das Fenster aufgemacht habe, ist die Luft frischer geworden.", "tip": "<strong>Trennbares Verb im Perfekt:</strong> auf-ge-macht — die Vorsilbe bleibt vorne, ge- kommt in die Mitte.", "level": "B1" },
+      "haupt": { "stem": "Ich habe immer die Tür abgeschlossen,", "instruction": "In welchem Fall? Wenn-Satz im Perfekt ergänzen.", "solution": "Ich habe immer die Tür abgeschlossen, wenn ich das Haus verlassen habe.", "tip": "<strong>Perfekt mit haben:</strong> das Partizip II (verlassen) und 'habe' stehen beide am Ende des Wenn-Satzes.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Immer wenn ich eine Präsentation vorbereitet habe,", "instruction": "Was hast du danach gemacht? Hauptsatz im Perfekt.", "solution": "Immer wenn ich eine Präsentation vorbereitet habe, habe ich vor dem Spiegel geübt.", "tip": "<strong>Zwei Perfekt-Formen im Satz:</strong> <em>Wenn ... vorbereitet <strong>habe, habe</strong> ich ...</em>", "level": "B1" },
+      "haupt": { "stem": "Ich habe immer dem Kunden geantwortet,", "instruction": "In welchem Fall? Wenn-Satz im Perfekt ergänzen.", "solution": "Ich habe immer dem Kunden geantwortet, wenn er eine Frage gestellt hat.", "tip": "<strong>Partizip II ans Ende:</strong> 'gestellt' steht vor 'hat', ganz am Schluss des Wenn-Satzes.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Jedes Mal, wenn ich ein Konzert besucht habe,", "instruction": "Was hast du gemacht? Hauptsatz im Perfekt.", "solution": "Jedes Mal, wenn ich ein Konzert besucht habe, habe ich tolle Fotos gemacht.", "tip": "<strong>Partizip 2 von 'besuchen': besucht.</strong> Kein ge-, weil das Präfix be- untrennbar ist.", "level": "A2" },
+      "haupt": { "stem": "Ich bin oft ins Kino gegangen,", "instruction": "In welchem Fall? Wenn-Satz im Perfekt ergänzen.", "solution": "Ich bin oft ins Kino gegangen, wenn es einen neuen Film gab.", "tip": "<strong>'Es gab' - Präteritum von 'geben'.</strong> Merke dir: Wenn es + Akk gibt (Präsens)", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Immer wenn ich gejoggt bin,", "instruction": "Was hast du danach gemacht? Hauptsatz im Perfekt.", "solution": "Immer wenn ich gejoggt bin, habe ich mich energievoll gefühlt.", "tip": "<strong>Zwei Hilfsverben in einem Satz:</strong> <em>gejoggt bin (sein)</em> und <em>mich gefühlt habe (haben)</em> — je nach Verb.", "level": "B1" },
+      "haupt": { "stem": "Ich habe mein Auto immer schnell geparkt,", "instruction": "In welchem Fall? Wenn-Satz im Perfekt ergänzen.", "solution": "Ich habe mein Auto immer schnell geparkt, wenn ich einen freien Parkplatz gefunden habe.", "tip": "<strong>gefunden habe:</strong> Partizip II von finden, ganz am Ende des Wenn-Satzes.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Jedes Mal, wenn ich das Protokoll geschrieben habe,", "instruction": "Was hast du danach in der Regel gemacht? Hauptsatz im Perfekt.", "solution": "Jedes Mal, wenn ich das Protokoll geschrieben habe, habe ich es an das Team geschickt.", "tip": "<strong>Hilfsverb 'haben' am Ende</strong> des Wenn-Satzes. Auch den Hauptsatz beginnen wir mit dem Hilfsverb 'haben'.", "level": "B1" },
+      "haupt": { "stem": "Ich bin normalerweise zum Meeting gekommen,", "instruction": "In welchem Fall? Wenn-Satz im Perfekt ergänzen.", "solution": "Ich bin normalerweise zum Meeting gekommen, wenn ich die Einladung per E-Mail bekommen habe.", "tip": "<strong>bekommen habe:</strong> Partizip II von bekommen (kein ge-, weil be- untrennbar ist), ganz am Ende des Wenn-Satzes.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Immer wenn ich eingekauft habe,", "instruction": "Was hast du danach normalerweise gemacht? Hauptsatz im Perfekt.", "solution": "Immer wenn ich eingekauft habe, habe ich alles in den Kühlschrank geräumt.", "tip": "<strong>Trennbares Verb im Perfekt:</strong> ein-ge-kauft — ge- wandert in die Mitte.", "level": "B1" },
+      "haupt": { "stem": "Hast du mehr gelacht,", "instruction": "In welchem Fall? Wenn-Satz im Perfekt ergänzen.", "solution": "Hast du mehr gelacht, wenn du weniger gearbeitet hast?", "tip": "<strong>gearbeitet hast:</strong> Hilfsverb 'hast' ganz am Ende des Wenn-Satzes.", "level": "A2" }
+    },
+    {
+      "wenn": { "stem": "Jedes Mal, wenn ich mit einer Serie fertig war,", "instruction": "Was hast du dann immer gemacht? Hauptsatz im Perfekt.", "solution": "Jedes Mal, wenn ich mit einer Serie fertig war, habe ich sie meinen Freund:innen empfohlen.", "tip": "<strong>Starkes Verb:</strong> empfohlen — Partizip II ohne ge-, da emp- untrennbar ist.", "level": "B1" },
+      "haupt": { "stem": "Ich habe oft im Garten gearbeitet,", "instruction": "In welchem Fall? Wenn-Satz im Perfekt ergänzen.", "solution": "Ich habe oft im Garten gearbeitet, wenn das Wetter mitgespielt hat.", "tip": "<strong>Trennbares Verb:</strong> mit-ge-spielt — auch hier wandert ge- in die Mitte.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Immer wenn ich die Rechnung bezahlt habe,", "instruction": "Was ist oft danach passiert? Hauptsatz im Perfekt.", "solution": "Immer wenn ich die Rechnung bezahlt habe, habe ich die Bestätigung per E-Mail bekommen.", "tip": "<strong>bezahlt und bekommen:</strong> beide Partizip II mit 'haben'. Kein ge-, weil das Präfix be- untrennbar ist.", "level": "B1" },
+      "haupt": { "stem": "Ich habe morgens das Paket abgeholt,", "instruction": "In welchem Fall in der Regel? Wenn-Satz im Perfekt ergänzen.", "solution": "Ich habe morgens das Paket abgeholt, wenn der Postbote es gebracht hat.", "tip": "<strong>gebracht hat:</strong> unregelmäßiges Partizip II, ganz am Schluss des Wenn-Satzes.", "level": "B1" }
+    }
+  ],
+  "konjunktiv2": [
+    {
+      "wenn": { "stem": "Wenn ich mehr Zeit hätte,", "instruction": "Was würdest du tun? Hauptsatz mit Konjunktiv II.", "solution": "Wenn ich mehr Zeit hätte, würde ich etwas Neues lernen.", "tip": "<strong>Konjunktiv II:</strong> hätte im Wenn-Satz am Ende, würde + Infinitiv im Hauptsatz.", "level": "B1" },
+      "haupt": { "stem": "Ich würde dir gern helfen,", "instruction": "In welchem Fall? Wenn-Satz im Konjunktiv II.", "solution": "Ich würde dir gern helfen, wenn du mich fragen würdest.", "tip": "<strong>würdest</strong> am Ende — im Wenn-Satz steht das konjugierte Verb ganz hinten, auch im Konjunktiv II.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Wenn ich an deiner Stelle wäre,", "instruction": "Was würdest du tun? Ratschlag als Hauptsatz.", "solution": "Wenn ich an deiner Stelle wäre, würde ich mit ihr sprechen.", "tip": "<strong>wäre</strong> — Konjunktiv II von sein, am Ende im Wenn-Satz.", "level": "B1" },
+      "haupt": { "stem": "Er würde den Job annehmen,", "instruction": "In welchem Fall? Wenn-Satz im Konjunktiv II.", "solution": "Er würde den Job annehmen, wenn das Gehalt höher wäre.", "tip": "<strong>wäre</strong> am Ende des Wenn-Satzes, Konjunktiv 2 von 'sein'.", "level": "B2" }
+    },
+    {
+      "wenn": { "stem": "Wenn wir eine größere Wohnung hätten,", "instruction": "Was wäre möglich? Hauptsatz formulieren.", "solution": "Wenn wir eine größere Wohnung hätten, könnten wir noch einen Hund haben :)", "tip": "<strong>könnten</strong> — Konjunktiv II von können. <strong>Hätten</strong> - Konjunktiv 2 von <em>haben</em> - am Ende des Wenn-Satzes.", "level": "B2" },
+      "haupt": { "stem": "Ich würde früher aufstehen,", "instruction": "Was müsste sich ändern? Wenn-Satz im Konjunktiv II.", "solution": "Ich würde früher aufstehen, wenn ich abends früher schlafen gehen würde.", "tip": "<strong>gehen würde</strong> am Ende im Wenn-Satz.", "level": "B2" }
+    },
+    {
+      "wenn": { "stem": "Wenn du mir das erklären könntest,", "instruction": "Was wäre das Ergebnis? Hauptsatz formulieren.", "solution": "Wenn du mir das erklären könntest, wäre ich sehr dankbar.", "tip": "<strong>könntest + Infinitiv</strong> im Wenn-Satz — das konjugierte Modalverb steht am Ende.", "level": "B2" },
+      "haupt": { "stem": "Es wäre wunderbar,", "instruction": "Wenn was passieren würde? Wenn-Satz im Konjunktiv II ergänzen.", "solution": "Es wäre wunderbar, wenn du kommen könntest.", "tip": "<strong>könntest</strong> am Ende — auch Modalverben wandern im Nebensatz ans Satzende.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Wenn ich Deutsch fließend sprechen würde,", "instruction": "Was würde sich ändern? Hauptsatz formulieren.", "solution": "Wenn ich Deutsch fließend sprechen würde, hätte ich bessere Jobchancen.", "tip": "In der Umgangssprache wird <strong>würden + Infinitiv</strong> oft benutzt. 'würde' geht ans Ende im Wenn-Satz", "level": "B2" },
+      "haupt": { "stem": "Ich würde gern ein Instrument lernen,", "instruction": "In welchem Fall? Wenn-Satz im Konjunktiv II.", "solution": "Ich würde gern ein Instrument lernen, wenn ich mehr Geduld hätte.", "tip": "<strong>hätte</strong> - Konjunktiv 2 von <em>haben</em>", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Wenn es nicht so kalt wäre,", "instruction": "Was würdest du tun? Hauptsatz mit Konjunktiv II.", "solution": "Wenn es nicht so kalt wäre, würde ich draußen sitzen.", "tip": "<strong>wäre</strong> im Wenn-Satz, würde + Infinitiv im Hauptsatz.", "level": "B1" },
+      "haupt": { "stem": "Sie würde dir sofort schreiben,", "instruction": "In welchem Fall? Wenn-Satz im Konjunktiv II ergänzen.", "solution": "Sie würde dir sofort schreiben, wenn sie deine Nummer hätte.", "tip": "<strong>hätte</strong> am Ende im Wenn-Satz.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Wenn ich in Berlin leben würde,", "instruction": "Was würdest du machen? Hauptsatz formulieren.", "solution": "Wenn ich in Berlin leben würde, würde ich jeden Abend ausgehen.", "tip": "<strong>leben würde</strong> — am Ende im Wenn-Satz.", "level": "B2" },
+      "haupt": { "stem": "Das Team hätte mehr Erfolg,", "instruction": "In welchem Fall? Wenn-Satz im Konjunktiv II.", "solution": "Das Team hätte mehr Erfolg, wenn alle besser zusammenarbeiten würden.", "tip": "<strong>würden + Infinitiv:</strong> zusammenarbeiten würden — nie doppelt markieren (nicht: zusammenarbeiteten würden).", "level": "B2" }
+    },
+    {
+      "wenn": { "stem": "Wenn ich mein eigenes Café hätte,", "instruction": "Was würdest du dort machen? Hauptsatz formulieren.", "solution": "Wenn ich mein eigenes Café hätte, würde ich jeden Morgen frische Brötchen backen.", "tip": "<strong>hätte</strong> im Wenn-Satz, würde + Infinitiv im Hauptsatz — ein Klassiker für Träume und Wünsche.", "level": "B1" },
+      "haupt": { "stem": "Ich würde das Angebot annehmen,", "instruction": "In welchem Fall? Wenn-Satz im Konjunktiv II.", "solution": "Ich würde das Angebot annehmen, wenn die Bedingungen fair wären.", "tip": "<strong>wären</strong> — Konjunktiv II von <em>sein</em> im Plural.", "level": "B2" }
+    }
+  ],
+  "modalverben": [
+    {
+      "wenn": { "stem": "Wenn du heute länger bleiben musst,", "instruction": "Was soll ich tun? Hauptsatz im Imperativ.", "solution": "Wenn du heute länger bleiben musst, ruf mich bitte an.", "tip": "<strong>musst</strong> — Modalverb im Präsens, ganz am Ende des Wenn-Satzes; der Hauptsatz steht im Imperativ.", "level": "A2" },
+      "haupt": { "stem": "Ich helfe dir,", "instruction": "In welchem Fall? Wenn-Satz mit Modalverb im Präsens ergänzen.", "solution": "Ich helfe dir, wenn ich dir helfen kann.", "tip": "<strong>kann</strong> — Modalverb im Präsens, ganz am Ende des Wenn-Satzes.", "level": "A2" }
+    },
+    {
+      "wenn": { "stem": "Wenn ihr das schaffen wollt,", "instruction": "Was müsst ihr tun? Hauptsatz mit Inversion.", "solution": "Wenn ihr das schaffen wollt, müsst ihr zusammenarbeiten.", "tip": "<strong>Inversion:</strong> müsst ihr — direkt nach dem Komma; <strong>wollt</strong> am Ende des Wenn-Satzes.", "level": "B1" },
+      "haupt": { "stem": "Du musst hier warten,", "instruction": "In welchem Fall? Wenn-Satz mit Modalverb im Präsens ergänzen.", "solution": "Du musst hier warten, wenn du den Arzt sprechen möchtest.", "tip": "<strong>möchtest</strong> — höfliche Form von wollen, ganz am Ende des Wenn-Satzes.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Wenn du mitfahren möchtest,", "instruction": "Was soll ich tun? Hauptsatz im Imperativ.", "solution": "Wenn du mitfahren möchtest, gib mir kurz Bescheid.", "tip": "<strong>möchtest</strong> — höfliche Form von wollen, ganz am Ende des Wenn-Satzes.", "level": "A2" },
+      "haupt": { "stem": "Ich sage es dem Chef,", "instruction": "In welchem Fall? Wenn-Satz mit Modalverb im Präsens ergänzen.", "solution": "Ich sage es dem Chef, wenn ich das tun soll.", "tip": "<strong>soll</strong> — Modalverb im Präsens, ganz am Ende des Wenn-Satzes.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Wenn wir das Ziel erreichen wollen,", "instruction": "Was müssen wir tun? Hauptsatz mit Inversion.", "solution": "Wenn wir das Ziel erreichen wollen, müssen wir jetzt anfangen.", "tip": "<strong>Inversion:</strong> müssen wir — direkt nach dem Komma; <strong>wollen</strong> am Ende des Wenn-Satzes.", "level": "B1" },
+      "haupt": { "stem": "Ich rufe dich später an,", "instruction": "In welchem Fall? Wenn-Satz mit Modalverb im Präsens ergänzen.", "solution": "Ich rufe dich später an, wenn ich das Büro verlassen darf.", "tip": "<strong>darf</strong> — Modalverb im Präsens, ganz am Ende des Wenn-Satzes.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Wenn ich früher länger arbeiten musste,", "instruction": "Was hast du gemacht? Hauptsatz im Perfekt.", "solution": "Wenn ich früher länger arbeiten musste, habe ich immer ein Taxi genommen.", "tip": "<strong>musste</strong> — Modalverb im Präteritum am Ende des Wenn-Satzes; der Hauptsatz steht im Perfekt.", "level": "B1" },
+      "haupt": { "stem": "Ich habe jedes Mal Kaffee getrunken,", "instruction": "In welchem Fall? Wenn-Satz mit Modalverb im Präteritum ergänzen.", "solution": "Ich habe jedes Mal Kaffee getrunken, wenn ich früh aufstehen musste.", "tip": "<strong>musste</strong> — Modalverb im Präteritum, ganz am Ende des Wenn-Satzes.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Wenn ich etwas nicht verstehen konnte,", "instruction": "Was hast du gemacht? Hauptsatz im Perfekt.", "solution": "Wenn ich etwas nicht verstehen konnte, habe ich sofort nachgefragt.", "tip": "<strong>konnte</strong> — Präteritum von können; <strong>nachgefragt</strong> — trennbares Verb im Partizip II.", "level": "B1" },
+      "haupt": { "stem": "Wir haben oft zusammen gelernt,", "instruction": "In welchem Fall? Wenn-Satz mit Modalverb im Präteritum ergänzen.", "solution": "Wir haben oft zusammen gelernt, wenn wir die Prüfung bestehen wollten.", "tip": "<strong>wollten</strong> — Präteritum Plural von wollen, ganz am Ende des Wenn-Satzes.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Wenn ich dir helfen konnte,", "instruction": "Was hast du gemacht? Hauptsatz im Perfekt.", "solution": "Wenn ich dir helfen konnte, habe ich das gern gemacht.", "tip": "<strong>konnte</strong> — Modalverb im Präteritum, ganz am Ende des Wenn-Satzes.", "level": "A2" },
+      "haupt": { "stem": "Sie hat immer Notizen gemacht,", "instruction": "In welchem Fall? Wenn-Satz mit Modalverb im Präteritum ergänzen.", "solution": "Sie hat immer Notizen gemacht, wenn sie sich etwas merken wollte.", "tip": "<strong>wollte</strong> — Präteritum von wollen; reflexives Verb <em>sich merken</em>.", "level": "B1" }
+    },
+    {
+      "wenn": { "stem": "Wenn er nicht mitkommen durfte,", "instruction": "Was hat er gemacht? Hauptsatz im Perfekt.", "solution": "Wenn er nicht mitkommen durfte, hat er seine Freunde später getroffen.", "tip": "<strong>durfte</strong> — Präteritum von dürfen; <strong>mitkommen</strong> bleibt als Infinitiv zusammen.", "level": "B1" },
+      "haupt": { "stem": "Wir haben uns immer gemeldet,", "instruction": "In welchem Fall? Wenn-Satz mit Modalverb im Präteritum ergänzen.", "solution": "Wir haben uns immer gemeldet, wenn wir uns verspäten mussten.", "tip": "<strong>mussten</strong> — Präteritum Plural von müssen; reflexives Verb <em>sich verspäten</em>.", "level": "B1" }
+    }
+  ]
+}
+</script>
+<script>
+// Load card data from JSON block
+const rawData = JSON.parse(document.getElementById('cardData').textContent);
+function assignIds(cardsArr, modeName) {
+  cardsArr.forEach((c, i) => {
+    c.wenn.id = modeName + '-' + i + '-wenn';
+    c.haupt.id = modeName + '-' + i + '-haupt';
+  });
+  return cardsArr;
+}
+const cardsPraesens = assignIds(rawData.praesens, 'praesens');
+const cardsPerfekt = assignIds(rawData.perfekt, 'perfekt');
+const cardsKonjunktiv2 = assignIds(rawData.konjunktiv2, 'konjunktiv2');
+const cardsModalverben = assignIds(rawData.modalverben, 'modalverben');
+
+// ── STATE ──
+let currentMode = 'praesens';
+let deck = [];
+let currentIndex = 0;
+let isFlipped = false;
+let hasSeenSolution = false;
+let sessionStarted = false;
+let forceFullDeck = false;
+const DECK_SIZE = 10; // Karten pro Trainingsrunde
+let sessionRatings = { schwer: 0, mittel: 0, leicht: 0 };
+function resetSessionRatings() { sessionRatings = { schwer: 0, mittel: 0, leicht: 0 }; }
+
+// ── SPACED REPETITION (Leitner-System, gemeinsam über alle Modi) ──
+const SRS_KEY = 'wennTrainerSRS_v1';
+const BOX_INTERVALS_DAYS = [0, 1, 3, 7, 16]; // Box 0–4
+const MAX_BOX = BOX_INTERVALS_DAYS.length - 1;
+const DAY_MS = 24 * 60 * 60 * 1000;
+
+function loadSRS() {
+  try { return JSON.parse(localStorage.getItem(SRS_KEY)) || {}; }
+  catch (e) { return {}; }
+}
+function saveSRS() {
+  try { localStorage.setItem(SRS_KEY, JSON.stringify(srsData)); }
+  catch (e) { /* localStorage nicht verfügbar — Fortschritt bleibt nur für diese Session */ }
+}
+let srsData = loadSRS();
+
+function getCardState(id) {
+  return srsData[id] || { box: 0, due: 0, lastSeen: 0 };
+}
+
+function isDue(id) {
+  const state = getCardState(id);
+  return !state.lastSeen || state.due <= Date.now();
+}
+
+function rateCard(id, rating) {
+  const state = getCardState(id);
+  let box = state.box;
+  if (rating === 'schwer') box = 0;
+  else if (rating === 'mittel') box = Math.max(0, box);
+  else if (rating === 'leicht') box = Math.min(MAX_BOX, box + 1);
+  const now = Date.now();
+  srsData[id] = { box: box, due: now + BOX_INTERVALS_DAYS[box] * DAY_MS, lastSeen: now };
+  saveSRS();
+}
+
+function countDue(cardsArr) {
+  let n = 0;
+  cardsArr.forEach(c => {
+    if (isDue(c.wenn.id)) n++;
+    if (isDue(c.haupt.id)) n++;
+  });
+  return n;
+}
+
+function updateDueNote() {
+  const el = document.getElementById('dueNote');
+  if (!el) return;
+  const n = countDue(getCards());
+  if (n === 0) {
+    el.innerHTML = '🎉 Nichts fällig — du übst freiwillig alle Karten';
+  } else if (n <= DECK_SIZE) {
+    el.innerHTML = '🔔 <strong style="color:var(--orange)">' + n + '</strong> Karte' + (n === 1 ? '' : 'n') + ' heute fällig';
+  } else {
+    el.innerHTML = '🔔 <strong style="color:var(--orange)">' + n + '</strong> Karten warten — diese Runde übst du <strong style="color:var(--orange)">' + DECK_SIZE + '</strong> davon, der Rest kommt danach dran';
+  }
+}
+
+function updateLandingStats() {
+  const el = document.getElementById('statPairs');
+  if (!el) return;
+  el.textContent = getCards().length;
+}
+
+function getCards() {
+  if (currentMode === 'praesens') return cardsPraesens;
+  if (currentMode === 'perfekt') return cardsPerfekt;
+  if (currentMode === 'konjunktiv2') return cardsKonjunktiv2;
+  if (currentMode === 'modalverben') return cardsModalverben;
+  return [...cardsPraesens, ...cardsPerfekt, ...cardsKonjunktiv2, ...cardsModalverben];
+}
+
+function buildDeck() {
+  const cards = getCards();
+  const full = [];
+  cards.forEach(c => {
+    full.push({ ...c.wenn, direction: 'wenn' });
+    full.push({ ...c.haupt, direction: 'haupt' });
+  });
+  if (forceFullDeck) {
+    deck = full;
+    forceFullDeck = false;
+  } else {
+    const due = full.filter(c => isDue(c.id));
+    deck = due.length > 0 ? due : full;
+  }
+  shuffle(deck);
+  deck = deck.slice(0, DECK_SIZE);
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+}
+
+function switchMode(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.mode-tab').forEach(t => t.classList.remove('active'));
+  const tabId = 'tab' + mode.charAt(0).toUpperCase() + mode.slice(1);
+  document.getElementById(tabId).classList.add('active');
+  updateDueNote();
+  updateLandingStats();
+  if (sessionStarted) {
+    buildDeck();
+    currentIndex = 0;
+    resetSessionRatings();
+    document.getElementById('doneScreen').classList.remove('active');
+    document.getElementById('flipSection').classList.add('active');
+    document.getElementById('progressWrap').style.display = 'block';
+    document.getElementById('progressBadge').style.display = 'flex';
+    renderCard();
+  }
+}
+
+function startSession() {
+  buildDeck();
+  currentIndex = 0;
+  sessionStarted = true;
+  resetSessionRatings();
+
+  document.getElementById('landingScreen').style.display = 'none';
+  document.getElementById('doneScreen').classList.remove('active');
+  document.getElementById('flipSection').classList.add('active');
+  document.getElementById('progressWrap').style.display = 'block';
+  document.getElementById('progressBadge').style.display = 'flex';
+
+  document.getElementById('startBtn').style.display = 'none';
+  let rb = document.getElementById('resetBtn');
+  if (!rb) {
+    rb = document.createElement('button');
+    rb.className = 'btn btn-reset';
+    rb.id = 'resetBtn';
+    rb.textContent = '↺ Neustart';
+    rb.onclick = resetSession;
+    document.getElementById('controlsRow').appendChild(rb);
+  } else {
+    rb.style.display = '';
+  }
+
+  renderCard();
+}
+
+function resetSession() {
+  const rb = document.getElementById('resetBtn');
+
+  forceFullDeck = true; // nächster Start zeigt garantiert alle Karten, unabhängig vom Fällig-Status
+  sessionStarted = false;
+  document.getElementById('landingScreen').style.display = '';
+  document.getElementById('flipSection').classList.remove('active');
+  document.getElementById('doneScreen').classList.remove('active');
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('progressBadge').style.display = 'none';
+  document.getElementById('startBtn').style.display = '';
+  if (rb) {
+    rb.style.display = 'none';
+    rb.classList.remove('confirming');
+    rb.textContent = '↺ Neustart';
+  }
+}
+
+function renderCard() {
+  if (currentIndex >= deck.length) { showDone(); return; }
+  const card = deck[currentIndex];
+  isFlipped = false;
+  hasSeenSolution = false;
+  const cardEl = document.getElementById('theCard');
+  cardEl.classList.add('no-anim');
+  cardEl.classList.remove('flipped');
+  void cardEl.offsetWidth; // Reflow erzwingen, damit no-anim vor dem nächsten Flip greift
+
+  const isWenn = card.direction === 'wenn';
+  const pill = document.getElementById('directionPill');
+  const eyebrow = document.getElementById('cardEyebrow');
+  pill.textContent = isWenn ? '→ Hauptsatz ergänzen' : '→ Wenn-Satz ergänzen';
+  pill.className = 'direction-pill ' + (isWenn ? 'pill-wenn' : 'pill-haupt');
+  eyebrow.className = 'card-eyebrow ' + (isWenn ? 'eyebrow-wenn' : 'eyebrow-haupt');
+
+  document.getElementById('levelBadge').textContent = card.level || '';
+  document.getElementById('promptStem').textContent = card.stem;
+  document.getElementById('promptInstruction').textContent = card.instruction;
+  document.getElementById('solutionText').textContent = card.solution;
+  document.getElementById('tipBox').innerHTML = card.tip;
+
+  document.getElementById('flipHint').textContent = 'Tippen zum Umdrehen 🔄';
+  document.getElementById('flipHint').style.display = '';
+  document.getElementById('ratingRow').style.display = 'none';
+
+  const total = deck.length;
+  document.getElementById('progressFill').style.width = (currentIndex / total * 100) + '%';
+  document.getElementById('progressBadge').textContent = (currentIndex + 1) + ' / ' + total;
+  document.getElementById('counterText').textContent = (currentIndex + 1) + ' von ' + total;
+  document.getElementById('backNav').style.display = currentIndex > 0 ? 'flex' : 'none';
+
+  requestAnimationFrame(() => cardEl.classList.remove('no-anim'));
+}
+
+function prevCard() {
+  if (currentIndex <= 0) return;
+  currentIndex--;
+  renderCard();
+}
+
+function flipCard() {
+  isFlipped = !isFlipped;
+  document.getElementById('theCard').classList.toggle('flipped', isFlipped);
+
+  const hint = document.getElementById('flipHint');
+  if (isFlipped) {
+    hasSeenSolution = true;
+    hint.textContent = 'Tippen für die Vorderseite ↩️';
+  } else {
+    hint.textContent = 'Tippen zum Umdrehen 🔄';
+  }
+  hint.style.display = hasSeenSolution ? 'none' : '';
+  document.getElementById('ratingRow').style.display = hasSeenSolution ? 'flex' : 'none';
+}
+
+function rateAndNext(e, rating) {
+  if (e) e.stopPropagation();
+  const card = deck[currentIndex];
+  if (card && card.id) rateCard(card.id, rating);
+  if (sessionRatings[rating] !== undefined) sessionRatings[rating]++;
+  currentIndex++;
+  renderCard();
+}
+
+function showDone() {
+  document.getElementById('flipSection').classList.remove('active');
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('progressBadge').style.display = 'none';
+  document.getElementById('doneScreen').classList.add('active');
+  document.getElementById('doneNum').textContent = deck.length;
+
+  const { schwer, mittel, leicht } = sessionRatings;
+  const statsEl = document.getElementById('doneStats');
+  if (statsEl) {
+    statsEl.innerHTML =
+      '<span class="stat-chip stat-schwer">😓 ' + schwer + ' Schwer</span>' +
+      '<span class="stat-chip stat-mittel">🙂 ' + mittel + ' Mittel</span>' +
+      '<span class="stat-chip stat-leicht">😎 ' + leicht + ' Leicht</span>';
+  }
+
+  const remaining = countDue(getCards());
+  const subEl = document.getElementById('doneSub');
+  if (remaining > 0) {
+    if (subEl) subEl.textContent = 'Gut gemacht! Es warten noch ' + remaining + ' Karte' + (remaining === 1 ? '' : 'n') + ' auf dich — weiter geht\'s mit "Mischen".';
+  } else {
+    if (subEl) subEl.textContent = 'Gut gemacht — für heute bist du komplett durch! 🎉';
+  }
+
+  document.getElementById('socialCta').style.display = 'block';
+}
+
+function restartSession() {
+  currentIndex = 0;
+  isFlipped = false;
+  resetSessionRatings();
+  document.getElementById('doneScreen').classList.remove('active');
+  document.getElementById('flipSection').classList.add('active');
+  document.getElementById('progressWrap').style.display = 'block';
+  document.getElementById('progressBadge').style.display = 'flex';
+  renderCard();
+}
+
+function shuffleAndRestart() {
+  buildDeck();
+  currentIndex = 0;
+  isFlipped = false;
+  resetSessionRatings();
+  document.getElementById('doneScreen').classList.remove('active');
+  document.getElementById('flipSection').classList.add('active');
+  document.getElementById('progressWrap').style.display = 'block';
+  document.getElementById('progressBadge').style.display = 'flex';
+  renderCard();
+}
+
+// Touch swipe to flip
+let touchStartX = 0, touchStartY = 0;
+document.getElementById('cardArena').addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
+document.getElementById('cardArena').addEventListener('touchend', e => {
+  const dx = Math.abs(e.changedTouches[0].clientX - touchStartX);
+  const dy = Math.abs(e.changedTouches[0].clientY - touchStartY);
+  if (dx < 15 && dy < 15) {
+    e.preventDefault();
+    flipCard();
+  }
+}, { passive: false });
+
+// Theory modal
+function openTheory() {
+  document.getElementById('theoryModal').classList.add('open');
+}
+function closeTheory() {
+  document.getElementById('theoryModal').classList.remove('open');
+}
+function closeTheoryOutside(e) {
+  if (e.target === document.getElementById('theoryModal')) closeTheory();
+}
+
+updateDueNote();
+updateLandingStats();
+
+</script>
+</body>
+</html>
