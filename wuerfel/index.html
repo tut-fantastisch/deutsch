@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Deutsch-Würfelspiel</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Barlow', sans-serif;
+    background: #2A2118;
+    color: #E4D9C0;
+    min-height: 100vh;
+    padding: clamp(0.75rem, 3vw, 1.5rem);
+  }
+
+  .container { max-width: 660px; margin: 0 auto; width: 100%; }
+
+  .header {
+    border-bottom: 3px solid #B85C00;
+    padding-bottom: clamp(0.75rem, 2vw, 1rem);
+    margin-bottom: clamp(0.75rem, 3vw, 1.25rem);
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  .header-eyebrow {
+    font-family: 'Barlow', sans-serif;
+    font-size: clamp(0.6rem, 1.4vw, 0.7rem);
+    font-weight: 600;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #B85C00;
+    margin-bottom: 2px;
+  }
+  h1 {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: clamp(36px, 9vw, 56px);
+    font-weight: 800;
+    color: #E4D9C0;
+    letter-spacing: 0.04em;
+    line-height: 0.9;
+  }
+  h1 em { color: #B85C00; font-style: normal; }
+
+  /* Badge */
+  .header-badge {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1rem, 2vw, 12px);
+    letter-spacing: 0.1em;
+    color: #E4D9C0;
+    background: transparent;
+    border: 1px solid #E4D9C0;
+    padding: 4px 10px;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+
+  /* Level switcher */
+  .level-switch {
+    display: flex;
+    gap: 0;
+    margin-bottom: clamp(0.5rem, 2vw, 0.75rem);
+  }
+  .level-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1rem, 2.5vw, 1.15rem);
+    letter-spacing: 0.12em;
+    padding: 7px 20px;
+    border: 2px solid #4A3F30;
+    background: transparent;
+    color: #7A6E58;
+    cursor: pointer;
+    transition: all 0.1s;
+    border-right: none;
+  }
+  .level-btn:last-child { border-right: 2px solid #4A3F30; }
+  .level-btn:hover { background: #3A2E20; color: #E4D9C0; }
+  .level-btn.active-a { background: #B85C00; color: #E4D9C0; border-color: #B85C00; }
+  .level-btn.active-a + .level-btn { border-left: none; }
+  .level-btn.active-b { background: #5C6B2E; color: #E4D9C0; border-color: #5C6B2E; }
+
+  .subtitle {
+    font-family: 'Barlow', sans-serif;
+    font-size: clamp(0.9rem, 1.4vw, 1rem);
+    color: #7A6E58;
+    margin-bottom: clamp(0.75rem, 3vw, 1.25rem);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* Board wrapper — for positioning the dice button */
+  .board-wrapper {
+    position: relative;
+    margin-bottom: clamp(0.75rem, 3vw, 1.5rem);
+  }
+
+  #roll-btn {
+    position: absolute;
+    top: -65px;
+    right: 0;
+    width: 56px;
+    height: 56px;
+    background: rgba(184, 92, 0, 0.1);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1.5px solid rgba(184, 92, 0, 0.45);
+    border-radius: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.12s;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.06);
+    padding: 0;
+    z-index: 10;
+    animation: pulse-glow 2s infinite;
+  }
+
+  @keyframes pulse-glow {
+  0% {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.06),
+                0 0 0 0 rgba(184, 92, 0, 0.5);
+  }
+  70% {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.06),
+                0 0 0 10px rgba(184, 92, 0, 0);
+  }
+  100% {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.4), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.06),
+                0 0 0 0 rgba(184, 92, 0, 0);
+  }
+}
+
+  #roll-btn:hover {
+    background: rgba(184, 92, 0, 0.22);
+    border-color: rgba(184, 92, 0, 0.8);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  #roll-btn:active { transform: translateY(1px); box-shadow: 0 1px 6px rgba(0,0,0,0.4); }
+  #roll-btn:disabled {
+    background: rgba(60,56,50,0.4);
+    border-color: rgba(80,76,70,0.3);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+  #roll-btn:disabled .dice-svg { opacity: 0.25; }
+
+  /* Board */
+  #board {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 3px;
+    background: #1A1208;
+    padding: 3px;
+  }
+
+  .field {
+    aspect-ratio: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow', sans-serif;
+    cursor: default;
+    position: relative;
+    text-align: center;
+    line-height: 1.2;
+    transition: transform 0.1s;
+    background: #2E2416;
+    padding: 2px;
+  }
+  .field.active {
+    outline: 3px solid #B85C00;
+    outline-offset: -3px;
+    z-index: 2;
+    transform: scale(1.06);
+    background: #3A2E1A !important;
+  }
+  .field .fnum {
+    font-size: clamp(0.65rem, 1.3vw, 0.78rem);
+    color: #8A7A60;
+    margin-bottom: 2px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+  .field .ficon {
+    width: clamp(20px, 4vw, 26px);
+    height: clamp(20px, 4vw, 26px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .field.start { background: #B85C00; }
+  .field.start .fnum { color: #E4D9C0; }
+  .field.end { background: #5C6B2E; }
+  .field.end .fnum { color: #E4D9C0; }
+
+  .pawn {
+    position: absolute;
+    top: 1px;
+    right: 2px;
+    width: clamp(14px, 2.5vw, 18px);
+    height: clamp(14px, 2.5vw, 18px);
+  }
+
+  /* Controls bar — only pos-label now */
+  .controls {
+    display: flex;
+    gap: clamp(8px, 2vw, 12px);
+    align-items: center;
+    margin-bottom: clamp(0.75rem, 3vw, 1rem);
+  }
+
+  .pos-label {
+    font-family: 'Barlow', sans-serif;
+    font-size: clamp(0.65rem, 1.4vw, 0.7rem);
+    color: #7A6E58;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* Task card */
+  #task-card {
+    border-left: 4px solid #B85C00;
+    padding: clamp(0.75rem, 2.5vw, 1.1rem);
+    background: #221A0E;
+    min-height: 60px;
+  }
+
+  .task-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    font-size: clamp(0.75rem, 1.6vw, 0.85rem);
+    margin-bottom: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 2px 8px;
+  }
+  .task-label svg { flex-shrink: 0; }
+
+  .task-text {
+    font-family: 'Barlow', sans-serif;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    font-weight: 400;
+    color: #C8BEA8;
+    line-height: 1.7;
+    margin-top: 4px;
+  }
+
+  /* Flip card */
+  .flip-wrap {
+    perspective: 1000px;
+    width: 100%;
+  }
+  .flip-inner {
+    position: relative;
+    width: 100%;
+    transition: transform 0.55s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+  .flip-inner.flipped { transform: rotateY(180deg); }
+  .card-front, .card-back {
+    width: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  .card-back {
+    position: absolute;
+    top: 0; left: 0;
+    transform: rotateY(180deg);
+    background: #221A0E;
+  }
+  .solution-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: clamp(0.7rem, 1.5vw, 0.8rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #5C6B2E;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .solution-text {
+    font-family: 'Barlow', sans-serif;
+    font-size: clamp(1.4rem, 2vw, 1.05rem);
+    color: #B85C00;
+    line-height: 1.7;
+    margin-bottom: 1.25rem;
+  }
+  #flip-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    width: 100%;
+    padding: clamp(10px, 2.5vw, 13px);
+    font-size: clamp(1.1rem, 2vw, 1rem);
+    background: transparent;
+    color: #5C6B2E;
+    border: 2px solid #5C6B2E;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+    transition: background 0.08s, color 0.08s;
+  }
+  #flip-btn:hover { background: #5C6B2E; color: #E4D9C0; }
+  #flip-btn.b-level { color: #5C6B2E; border-color: #5C6B2E; }
+
+  /* Popup */
+  #popup-overlay {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    background: rgba(20,18,15,0.92);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  #popup-overlay.open { opacity: 1; pointer-events: all; }
+  #popup-box {
+    background: #221A0E;
+    border-left: 5px solid #B85C00;
+    padding: clamp(1.25rem, 4vw, 2rem);
+    width: 100%;
+    max-width: 460px;
+    animation: popIn 0.95s cubic-bezier(0.34, 1.3, 0.64, 1) both;
+  }
+  #popup-box.b-level { border-left-color: #5C6B2E; }
+  @keyframes popIn {
+    0%   { transform: translateY(16px) scale(0.97); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+  }
+  #popup-box .task-label { font-size: clamp(0.75rem, 1.6vw, 0.85rem); }
+  #popup-box .task-text  { font-size: clamp(1.4rem, 2.2vw, 1.05rem); margin-bottom: 1.25rem; color: #D4C8B0; }
+
+  #popup-close-back {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    width: 100%;
+    padding: clamp(1rem, 2.5vw, 13px);
+    font-size: clamp(1.1rem, 2vw, 1rem);
+    background: #E4D9C0;
+    color: #2A2118;
+    border: none;
+    cursor: pointer;
+    margin-top: 0.25rem;
+    transition: background 0.08s;
+  }
+  #popup-close-back:hover { background: #4A5522; color: #E4D9C0; }
+  #popup-close-back.b-close { background: #5C6B2E; color: #E4D9C0; }
+  #popup-close-back.b-close:hover { background: #4A5522; }
+
+  #popup-close {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    width: 100%;
+    padding: clamp(10px, 2.5vw, 13px);
+    font-size: clamp(1.1rem, 2vw, 1rem);
+    background: #E4D9C0;
+    color: #2A2118;
+    border: none;
+    cursor: pointer;
+    margin-top: 0.25rem;
+    transition: background 0.08s;
+  }
+  #popup-close:hover { background: #4A5522; color: #E4D9C0}
+  #popup-close.b-close { background: #5C6B2E; color: #E4D9C0; }
+  #popup-close.b-close:hover { background: #4A5522; }
+
+  /* Footer */
+  footer {
+    margin-top: 2.5rem;
+    border-top: 1px solid #3A2E1A;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+  }
+  .footer-inner { max-width: 660px; margin: 0 auto; text-align: center; }
+  .footer-brand {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-weight: 700;
+    font-size: clamp(0.9rem, 2vw, 1rem);
+    letter-spacing: 0.15em;
+    color: #B85C00;
+    margin-bottom: 4px;
+  }
+  .footer-tagline {
+    font-family: 'Barlow', sans-serif;
+    font-size: clamp(0.72rem, 1.5vw, 0.78rem);
+    color: #7A6E58;
+    margin-bottom: 1.25rem;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+  }
+  .footer-links {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+  .footer-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Barlow', sans-serif;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    font-size: clamp(0.68rem, 1.4vw, 0.75rem);
+    padding: 7px 14px;
+    text-decoration: none;
+    border: 1.5px solid;
+    transition: all 0.12s;
+    text-transform: uppercase;
+  }
+  .footer-btn.tg {
+    color: #005cb8;
+    border-color: #003E80;
+    background: rgba(0, 92, 184, 0.08);
+  }
+  .footer-btn.tg:hover { background: rgba(0, 92, 184, 0.18); border-color: #005cb8; }
+  .footer-btn.ig {
+    color: #D4728A;
+    border-color: #7A3050;
+    background: rgba(212, 114, 138, 0.08);
+  }
+  .footer-btn.ig:hover { background: rgba(212, 114, 138, 0.18); border-color: #D4728A; }
+  .footer-btn.threads {
+    color: #B85C00;
+    border-color: #7A3D00;
+    background: rgba(184, 92, 0, 0.08);
+  }
+  .footer-btn.threads:hover { background: rgba(184, 92, 0, 0.18); border-color: #B85C00; }
+  .footer-more {
+    font-family: 'Barlow', sans-serif;
+    font-size: clamp(0.68rem, 1.4vw, 0.74rem);
+    color: #7A6E58;
+    letter-spacing: 0.03em;
+  }
+
+  @media (max-width: 360px) {
+    .field .fnum { font-size: 0.55rem; }
+    #roll-btn { width: 46px; height: 46px; top: -44px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header class="header">
+    <div class="header-left">
+      <p class="header-eyebrow">Deutsch als Fremdsprache</p>
+      <h1>Würfel<em>spiel</em></h1>
+    </div>
+    <span class="header-badge">30 Felder</span>
+  </header>
+
+  <div class="level-switch">
+    <button class="level-btn active-a" id="btn-a" onclick="setLevel('a')">A1–A2</button>
+    <button class="level-btn" id="btn-b" onclick="setLevel('b')">B1–B2</button>
+  </div>
+
+  <p class="subtitle" id="subtitle">A1–A2 · Würfeln und Aufgabe lösen → 🎲 🎲 🎲</p>
+
+  <div class="board-wrapper">
+    <!-- SVG Dice Button — top-right above the board -->
+    <button id="roll-btn" title="Würfeln" aria-label="Würfeln">
+      <svg class="dice-svg" id="dice-svg" width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="2" y="2" width="30" height="30" rx="0" stroke="#B85C00" stroke-width="1.8" fill="none"/>
+        <!-- dots for face 1 by default; JS updates this -->
+        <circle id="d1" cx="17" cy="17" r="2.8" fill="#B85C00"/>
+      </svg>
+    </button>
+
+    <div id="board"></div>
+  </div>
+
+  <div class="controls">
+    <span class="pos-label" id="pos-label">Feld 0 / 30</span>
+  </div>
+
+  <div id="task-card">
+    <p class="task-text" style="color:#5A4E38;">→ 💡 Klick auf den Würfel oben rechts, um loszuspielen.</p>
+  </div>
+</div>
+
+<div id="popup-overlay">
+  <div id="popup-box">
+    <div class="flip-wrap">
+      <div class="flip-inner" id="flip-inner">
+        <div class="card-front">
+          <div id="popup-content"></div>
+          <button id="flip-btn">Lösung anzeigen ▸</button>
+          <button id="popup-close">Fertig — weiter spielen</button>
+        </div>
+        <div class="card-back">
+          <div id="popup-solution"></div>
+          <button id="flip-back-btn" onclick="document.getElementById('flip-inner').classList.remove('flipped')" style="font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:0.12em;width:100%;padding:clamp(10px,2.5vw,13px);font-size:clamp(1.1rem,2vw,1rem);background:transparent;color:#7A6E58;border:2px solid #3A2E1A;cursor:pointer;margin-bottom:0.25rem;transition:background 0.08s,color 0.08s;">◂ Aufgabe</button>
+          <button id="popup-close-back">Fertig — weiter spielen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── SVG dot layouts for each face ───────────────────────────── */
+const DICE_DOT_LAYOUTS = [
+  /* 1 */ [[17,17]],
+  /* 2 */ [[10,10],[24,24]],
+  /* 3 */ [[10,10],[17,17],[24,24]],
+  /* 4 */ [[10,10],[24,10],[10,24],[24,24]],
+  /* 5 */ [[10,10],[24,10],[17,17],[10,24],[24,24]],
+  /* 6 */ [[10,9],[24,9],[10,17],[24,17],[10,25],[24,25]],
+];
+
+function renderDiceFace(n) {
+  const svg = document.getElementById('dice-svg');
+  /* remove old dots */
+  svg.querySelectorAll('circle').forEach(c => c.remove());
+  const dots = DICE_DOT_LAYOUTS[n - 1];
+  dots.forEach(([cx,cy]) => {
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx', cx); c.setAttribute('cy', cy);
+    c.setAttribute('r', '2.8'); c.setAttribute('fill', '#B85C00');
+    svg.appendChild(c);
+  });
+}
+
+/* ── SVG icons as inline strings ─────────────────────────────── */
+/* Each returns an SVG string sized to fit .field .ficon (24-26px box) */
+function svgGrammar(color) {
+  return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="4" width="12" height="1.8" rx="0.9" fill="${color}"/>
+    <rect x="2" y="8" width="18" height="1.8" rx="0.9" fill="${color}"/>
+    <rect x="2" y="12" width="14" height="1.8" rx="0.9" fill="${color}"/>
+    <path d="M14 16 L17 13 L20 16 L17 20 Z" fill="${color}" opacity="0.85"/>
+  </svg>`;
+}
+function svgBook(color) {
+  return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M3 5C3 4.45 3.45 4 4 4H10C11.1 4 12 4.9 12 6V18C12 18 10.5 17 9 17H4C3.45 17 3 16.55 3 16V5Z" fill="${color}" opacity="0.9"/>
+    <path d="M19 5C19 4.45 18.55 4 18 4H12V18C12 18 13.5 17 15 17H18C18.55 17 19 16.55 19 16V5Z" fill="${color}" opacity="0.65"/>
+    <rect x="5" y="7" width="5" height="1.4" rx="0.7" fill="${color === '#2A2118' ? 'rgba(228,217,192,0.7)' : 'rgba(26,20,0,0.5)'}"/>
+    <rect x="5" y="10" width="5" height="1.4" rx="0.7" fill="${color === '#2A2118' ? 'rgba(228,217,192,0.7)' : 'rgba(26,20,0,0.5)'}"/>
+  </svg>`;
+}
+function svgPencil(color) {
+  return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M14.5 3.5 L18.5 7.5 L8 18 L4 19 L5 15 Z" fill="${color}" opacity="0.9"/>
+    <path d="M13 5 L17 9" stroke="${color === '#2A2118' ? 'rgba(228,217,192,0.4)' : 'rgba(26,20,0,0.3)'}" stroke-width="1.2"/>
+    <path d="M4.5 18.5 L5.5 15.5 L6.5 16.5 Z" fill="${color}" opacity="0.6"/>
+  </svg>`;
+}
+function svgSpeech(color) {
+  return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M3 4C3 3.45 3.45 3 4 3H14C14.55 3 15 3.45 15 4V11C15 11.55 14.55 12 14 12H8L4 15V12H4C3.45 12 3 11.55 3 11V4Z" fill="${color}" opacity="0.9"/>
+    <circle cx="7" cy="7.5" r="1.2" fill="${color === '#2A2118' ? 'rgba(228,217,192,0.6)' : 'rgba(26,20,0,0.4)'}"/>
+    <circle cx="11" cy="7.5" r="1.2" fill="${color === '#2A2118' ? 'rgba(228,217,192,0.6)' : 'rgba(26,20,0,0.4)'}"/>
+    <path d="M9 14 Q12 14 14 12" stroke="${color}" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.7"/>
+    <circle cx="17" cy="13" r="3.5" fill="${color}" opacity="0.5"/>
+    <path d="M15.5 13 H18.5 M17 11.5 V14.5" stroke="${color === '#2A2118' ? '#2A2118' : '#2A2118'}" stroke-width="1.3" stroke-linecap="round"/>
+  </svg>`;
+}
+function svgDice(color) {
+  return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="2" y="2" width="18" height="18" rx="3.5" fill="${color}" opacity="0.9"/>
+    <circle cx="7" cy="7" r="1.8" fill="${color === '#2A2118' ? 'rgba(228,217,192,0.55)' : 'rgba(26,20,0,0.45)'}"/>
+    <circle cx="15" cy="7" r="1.8" fill="${color === '#2A2118' ? 'rgba(228,217,192,0.55)' : 'rgba(26,20,0,0.45)'}"/>
+    <circle cx="7" cy="15" r="1.8" fill="${color === '#2A2118' ? 'rgba(228,217,192,0.55)' : 'rgba(26,20,0,0.45)'}"/>
+    <circle cx="15" cy="15" r="1.8" fill="${color === '#2A2118' ? 'rgba(228,217,192,0.55)' : 'rgba(26,20,0,0.45)'}"/>
+  </svg>`;
+}
+function svgStar(color) {
+  return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M11 2 L13.09 8.26 L19.5 8.26 L14.5 12.14 L16.55 18.5 L11 14.77 L5.45 18.5 L7.5 12.14 L2.5 8.26 L8.91 8.26 Z" fill="${color}" opacity="0.9"/>
+  </svg>`;
+}
+function svgFlag(color) {
+  return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <line x1="5" y1="2" x2="5" y2="20" stroke="${color}" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M5 3 L18 7 L5 11 Z" fill="${color}" opacity="0.9"/>
+  </svg>`;
+}
+function svgTrophy(color) {
+  return `<svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M7 3 H15 V10 C15 13.3 12.3 16 11 16 C9.7 16 7 13.3 7 10 Z" fill="${color}" opacity="0.9"/>
+    <path d="M4 4 H7 V9 C7 9 5 8.5 4 7 C3 5.5 4 4 4 4Z" fill="${color}" opacity="0.65"/>
+    <path d="M18 4 H15 V9 C15 9 17 8.5 18 7 C19 5.5 18 4 18 4Z" fill="${color}" opacity="0.65"/>
+    <rect x="9" y="16" width="4" height="2.5" rx="0.5" fill="${color}" opacity="0.8"/>
+    <rect x="7" y="18.5" width="8" height="1.5" rx="0.5" fill="${color}" opacity="0.9"/>
+  </svg>`;
+}
+function svgPawn(color) {
+  return `<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="8" cy="4" r="3" fill="${color}"/>
+    <path d="M5 7 Q8 9 11 7 L12 14 H4 Z" fill="${color}" opacity="0.85"/>
+  </svg>`;
+}
+
+const ICON_FNS = { grammar: svgGrammar, book: svgBook, pencil: svgPencil, speech: svgSpeech, dice: svgDice, star: svgStar };
+
+const FIELD_COLORS = [
+  ['#2E2416','#B85C00'],['#2A2010','#C8BEA8'],['#302618','#B85C00'],
+  ['#2C2214','#C8BEA8'],['#322818','#B85C00'],['#2A2010','#C8BEA8'],
+  ['#2E2416','#B85C00'],['#2C2214','#C8BEA8'],['#302618','#B85C00'],
+  ['#281E0C','#C8BEA8'],['#2E2416','#B85C00'],['#2C2214','#C8BEA8'],
+];
+
+const TASK_TYPES = {
+  a: [
+    { label: 'Grammatik',   bg: '#B85C00', tc: '#E4D9C0', iconFn: 'grammar' },
+    { label: 'Vokabeln',    bg: '#3A2E1A', tc: '#C8BEA8', iconFn: 'book'    },
+    { label: 'Satz bilden', bg: '#B85C00', tc: '#E4D9C0', iconFn: 'pencil'  },
+    { label: 'Sprechen',    bg: '#3A2E1A', tc: '#C8BEA8', iconFn: 'speech'  },
+    { label: 'Spiel',       bg: '#5C6B2E', tc: '#E4D9C0', iconFn: 'dice'    },
+  ],
+  b: [
+    { label: 'Grammatik',   bg: '#B85C00', tc: '#E4D9C0', iconFn: 'grammar' },
+    { label: 'Wortschatz',  bg: '#3A2E1A', tc: '#C8BEA8', iconFn: 'book'    },
+    { label: 'Ausdruck',    bg: '#B85C00', tc: '#E4D9C0', iconFn: 'pencil'  },
+    { label: 'Sprechen',    bg: '#3A2E1A', tc: '#C8BEA8', iconFn: 'speech'  },
+    { label: 'Spiel',       bg: '#5C6B2E', tc: '#E4D9C0', iconFn: 'dice'    },
+  ],
+};
+
+const TASKS = {
+  a: [
+    {t:0, q:'Sag es im Perfekt:<br><em>Freitags kaufe ich Brot.</em>', a:'Freitags habe ich Brot gekauft.'},
+    {t:0, q:'Wie heißt der Artikel?<br>___ Hund,<br>___ E-Mail,<br>___ Auto.', a:'<strong>der</strong> Hund &nbsp;·&nbsp; <strong>die</strong> E-Mail &nbsp;·&nbsp; <strong>das</strong> Auto'},
+    {t:0, q:'Bilde einen Satz mit "WEIL":<br><em>Ich lerne Deutsch, weil ...</em>', a:'Ich lerne Deutsch, WEIL ich in Deutschland arbeiten MÖCHTE.'},
+    {t:0, q:'Konjugiere "haben":<br>ich, du, er/sie, wir, ihr, sie.', a:'ich habe · du hast · er/sie hat<br>wir haben · ihr habt · sie haben'},
+    {t:0, q:'Ergänze:<br>Er ___ müde. Sie ___ Hunger.', a:'Er <strong>ist</strong> müde. &nbsp; Sie <strong>hat</strong> Hunger.'},
+    {t:0, q:'Forme den Plural:<br><em>Das ist ein großer Hund.</em>', a:'Das sind große Hunde.'},
+    {t:1, q:'Nenne 5 Lebensmittel auf Deutsch 🧃', a:'Brot · Milch · Käse · Äpfel · Eier'},
+    {t:1, q:'Wann sagst du <em>"Entschuldigung"</em>?<br>Gib Beispiele.', a:'1. Hallo sagen / Fragen stellen (Aufmerksamkeit):<br><em>Entschuldigung, wie spät ist es?</em><br>2. Ein kleines Problem im Alltag (Versehen):<br><em>Entschuldigung, darf ich bitte vorbei?</em><br>Einen Fehler machen (Es tut mir leid):<br><em>Entschuldigung, der Bus hatte Verspätung.</em>'},
+    {t:1, q:'Nenne 4 Wochentage auf Deutsch 📅', a:'Montag · Dienstag · Mittwoch · Donnerstag'},
+    {t:1, q:'Was ist das Gegenteil von:<br>groß ←→ ?<br>kalt ←→ ?<br>schnell ←→ ?', a:'groß ←→ <strong>klein</strong><br>kalt ←→ <strong>warm</strong><br>schnell ←→ <strong>langsam</strong>'},
+    {t:1, q:'Nenne 5 Farben auf Deutsch 🎨', a:'rot · blau · grün · gelb · schwarz'},
+    {t:1, q:'Was ist ein "Supermarkt"? 🛒', a:'Ein Geschäft (Laden, Ort), wo man Lebensmittel und Alltagsprodukte kaufen kann.'},
+    {t:1, q:'Nenne 3 Berufe auf Deutsch 🕵️‍♂️', a:'Arzt/Ärztin · Lehrer/in · Ingenieur/in'},
+    {t:2, q:'Mach je einen Satz mit:<br>» heute<br>» morgen<br>» gestern', a:'Heute lerne ich Deutsch.<br>Morgen gehe ich einkaufen.<br>Gestern war ich müde.'},
+    {t:2, q:'Beschreibe dein Zimmer in 2 Sätzen.', a:'In meinem Zimmer gibt es ein Bett und einen Schreibtisch. Es ist hell und gemütlich.'},
+    {t:2, q:'Mach Fragen mit:<br>Wo?<br>Wann?<br>Warum?', a:'Wo wohnst du?<br>Wann kommst du?<br>Warum lernst du Deutsch?'},
+    {t:2, q:'Was machst du am Wochenende?<br>Mach 2 Sätze.', a:'Am Samstag schlafe ich lange. Am Sonntag treffe ich Freunde.'},
+    {t:2, q:'Sag einen Satz über das Wetter heute.', a:'Heute ist es sonnig und warm. / Heute regnet es.'},
+    {t:2, q:'Bilde einen Satz mit <em>"gern"</em> oder <em>"nicht gern"</em>.', a:'Ich trinke gern Kaffee. / Ich esse nicht gern Zwiebeln.'},
+    {t:3, q:'Wie heißst du und was bedeutet dein Name?'},
+    {t:3, q:'Was isst du gern?<br>Nenne 3 Dinge.'},
+    {t:3, q:'Beschreibe eine Person auf Deutsch.'},
+    {t:3, q:'Zähle laut von 10 bis 1. Auf Deutsch :)'},
+    {t:3, q:'Stelle eine Frage auf Deutsch.'},
+    {t:3, q:'Sprich laut:<br>"Fischers Fritz fischt frische Fische."'},
+    {t:4, q:'Formulier eine Frage zum Thema: Etwas ist kaputt.', a:'🫤 Entschuldigung, das Licht im Flur geht nicht. Können Sie mir bitte helfen?'},
+    {t:4, q:'Stell eine Smalltalk-Frage.', a:'💬 Machst du auch eine kurze Pause?<br>💬 Schönes Wetter heute, oder?<br>💬 Das sieht lecker aus! Kochst du gerne?'},
+    {t:4, q:'Du möchtest etwas bestellen.<br>Was sagst du?', a:'🛎️ Ich hätte gerne...<br>🛎️ Ich möchte bitte... bestellen<br>🛎️ Für mich bitte...'},
+    {t:4, q:'Mach 5 Sätze über dich.'},
+    {t:4, q:'🍀 Glücksfeld! Du hast heute Glück :)'},
+  ],
+  b: [
+    {t:0, q:'Ergänze den Relativsatz:<br><em>Das ist die Frau, ___ ich seit Jahren kenne.</em>', a:'Das ist die Frau, <strong><em>die</em></strong> ich seit Jahren kenne.'},
+    {t:0, q:'Konjunktiv II:<br>Was würdest du tun, wenn du ein paar Monate absolut frei hättest?', a:'Wenn ich ein paar Monate frei hätte, würde ich etwas Neues lernen und reisen.'},
+    {t:0, q:'Bilde Passiv:<br><em>Man baut das Vertrauen auf.</em>', a:'Das Vertrauen wird aufgebaut.'},
+    {t:0, q:'Wie verwendest du: <strong>obwohl / trotzdem</strong>.<br>Gib Beispiele.', a:'<em>Obwohl</em> es regnet, gehe ich spazieren.<br>Es regnet. <em>Trotzdem</em> gehe ich spazieren.'},
+    {t:0, q:'Wie sagst du mit anderen Worten:<br><em>"Er entscheidet schnell."</em><br>(Nomen-Verb-Verbindung)', a:'Er trifft schnelle Entscheidungen.'},
+    {t:0, q:'Bilde einen Satz mit <strong>je … desto</strong>.', a:'Je mehr man übt, desto besser spricht man.'},
+    {t:1, q:'Erkläre Unterschiede zwischen <em>kennen</em> und <em>wissen</em>.', a:'<em>kennen</em> + Akk = Personen/Orte/Dinge<br><em>wissen</em> + Nebensatz = Fakten, Informationen<br>Ich <em>kenne</em> diese Stadt. / Ich <em>weiß</em>, wo sie wohnt.'},
+    {t:1, q:'Was bedeutet <em>"Das A und O sein"</em>?<br>Gib ein Beispiel.', a:'Das Wichtigste, das Wesentliche.<br>Regelmäßiges Üben ist das A und O beim Sprachenlernen.'},
+    {t:1, q:'Welche Synonyme für <strong><em>sagen</em></strong> kennst du?', a:'erzählen · berichten · erwähnen<br>behaupten · erklären · meinen'},
+    {t:1, q:'Was ist ein <strong>"Feierabend"</strong>?', a:'Das Ende des Arbeitstages.<br><em>"Ich mache jetzt Feierabend."</em><br>Kein direktes Äquivalent auf Ukrainisch oder Englisch.'},
+    {t:1, q:'Erkläre den Unterschied: <strong>merken</strong> vs. <em>bemerken</em>.', a:'<em>merken</em> = für sich feststellen<br><em>bemerken</em> = wahrnehmen (z.B. sehen, hören)<br>Ich <em>merke</em>, dass ich müde bin. / Ich habe deinen Fehler <em>bemerkt (z.B. = gesehen)</em>.'},
+    {t:1, q:'Was sagst du, wenn du nicht derselben Meinung bist?', a:'Da bin ich anderer Meinung.<br>Das sehe ich anders.<br>Ich würde das nicht so sehen.'},
+    {t:1, q:'Was bedeutet <em>"auf dem Laufenden bleiben"</em><br>Beispiel, bitte :)', a:'Aktuelle Informationen haben.<br>Ich lese täglich Nachrichten, um auf dem Laufenden zu bleiben.'},
+    {t:2, q:'Sag einen Satz mit <strong>zwar ... aber</strong><br>und einen mit <strong>weder ... noch</strong>.', a:'Das war <em>zwar</em> schwierig, <em>aber</em> machbar.<br>Er trinkt <em>weder</em> Kaffee <em>noch</em> Tee.'},
+    {t:2, q:'Formuliere eine höfliche Beschwerde — 2-3 Sätze.', a:'Ich wollte kurz ansprechen, dass … Es wäre schön, wenn … Könnten Sie bitte …?'},
+    {t:2, q:'Beschreibe einen Vorteil von Homeoffice.', a:'Man spart Zeit, weil man nicht pendeln muss. Außerdem kann man die Arbeitszeit flexibler einteilen.'},
+    {t:2, q:'Bilde einen konzessiven Satz: "Das Wetter war <strong>zwar</strong> schlecht, <strong>aber</strong> ..."', a:'Das Wetter war zwar schlecht, aber wir haben den Ausflug genossen.'},
+    {t:2, q:'Formuliere eine Empfehlung mit <strong>sollte</strong> oder <em>es wäre ratsam</em>.', a:'Du solltest regelmäßig Pausen machen.<br>Es wäre ratsam, früher aufzustehen.'},
+    {t:2, q:'Sag einen Satz im Konjunktiv II:<br>Wunsch oder hypothetische Situation.', a:'Ich würde gern öfter reisen.<br>Wenn ich mehr Zeit hätte, würde ich ein Instrument lernen.'},
+    {t:3, q:'Erkläre einem Freund, warum du Deutsch lernst — 30 Sekunden Sprechen.'},
+    {t:3, q:'Stell dir vor, du bist in einem Vorstellungsgespräch.<br>Stell dich vor.<br>Aber kreativ :)'},
+    {t:3, q:'Beschreibe ein aktuelles Problem in deiner Stadt — 2-3 Sätze.', a:'* Baustellen auf den Hauptstraßen<br>* lange Staus im Berufsverkehr<br>* Zugverspätung<br>* Müll im Park/ am Strand<br>* hohe Mieten'},
+    {t:3, q:'Gib jemandem einen Rat:<br>Was soll man tun, wenn man gestresst ist?', a:'Schalte dein Smartphone für eine Stunde komplett aus oder lege es in einen anderen Raum.'},
+    {t:3, q:'Erkläre, warum es Langeweile gibt.', a:'Wenn wir ständig das Gleiche tun – also pure Routine haben –, wird das Gehirn irgendwann unterfordert und schüttet kein Glückshormon (Dopamin) mehr aus.'},
+    {t:3, q:'Diskutiere:<br>Sollte man soziale Medien für Menschen einschränken?', a:'Einerseits...<br>Andererseits...<br>Dabei...<br>Deswegen bin ich der Meinung, dass...'},
+    {t:4, q:'Formulier eine Diskussionsfrage.', a:'🤔 Ist Langeweile nicht eigentlich ein totales Luxusproblem? Wer gestresst ist, kennt das doch gar nicht, oder?'},
+    {t:4, q:'Stell eine Smalltalk-Frage.', a:'💬 Und, hast du heute noch was Schönes vor?<br>💬 Wie läuft dein Tag so? Viel zu tun im Moment?<br>💬 Echt Wahnsinn das Wetter heute, oder?'},
+    {t:4, q:'Mach einen Vorschlag:<br>Was könnte man am Feierabend zusammen mit Kollegen machen?', a:'🍺 "After-Work-Bierchen" (oder Erfrischungsgetränk): Der absolute Favorit :)'},
+    {t:4, q:'Kettenspiel: Jeder ergänzt einen Satz zum Thema "Reisen".'},
+    {t:4, q:'🍀 Glücksfeld! Du hast heute Glück :)'},
+  ],
+};
+
+let position = 0;
+let currentLevel = 'a';
+
+const boardEl        = document.getElementById('board');
+const rollBtn        = document.getElementById('roll-btn');
+const posLabel       = document.getElementById('pos-label');
+const taskCard       = document.getElementById('task-card');
+const overlay        = document.getElementById('popup-overlay');
+const popupContent   = document.getElementById('popup-content');
+const popupSolution  = document.getElementById('popup-solution');
+const popupClose     = document.getElementById('popup-close');
+const popupCloseBack = document.getElementById('popup-close-back');
+const popupBox       = document.getElementById('popup-box');
+const flipInner      = document.getElementById('flip-inner');
+const flipBtn        = document.getElementById('flip-btn');
+const subtitle       = document.getElementById('subtitle');
+const btnA           = document.getElementById('btn-a');
+const btnB           = document.getElementById('btn-b');
+
+function setLevel(level) {
+  if (level === currentLevel) return;
+  currentLevel = level;
+  btnA.className = 'level-btn' + (level === 'a' ? ' active-a' : '');
+  btnB.className = 'level-btn' + (level === 'b' ? ' active-b' : '');
+  subtitle.textContent = level === 'a'
+    ? 'A1–A2 · Würfeln und Aufgabe lösen →'
+    : 'B1–B2 · Würfeln und Aufgabe lösen →';
+  restartGame();
+}
+
+function iconForField(typeIdx, level) {
+  const type = TASK_TYPES[level][typeIdx];
+  const fn = ICON_FNS[type.iconFn];
+  return fn ? fn(type.tc) : '';
+}
+
+function buildBoard() {
+  boardEl.innerHTML = '';
+  const tasks = TASKS[currentLevel];
+  const types = TASK_TYPES[currentLevel];
+  for (let i = 0; i <= 30; i++) {
+    const div = document.createElement('div');
+    div.className = 'field';
+    div.id = 'f' + i;
+    if (i === 0) {
+      div.classList.add('start');
+      div.innerHTML = `<span class="fnum">START</span><div class="ficon">${svgFlag('#E4D9C0')}</div>`;
+    } else if (i === 30) {
+      div.classList.add('end');
+      div.innerHTML = `<span class="fnum">ZIEL</span><div class="ficon">${svgTrophy('#E4D9C0')}</div>`;
+    } else {
+      const [bg, tc] = FIELD_COLORS[(i-1) % FIELD_COLORS.length];
+      div.style.background = bg;
+      const typeIdx = tasks[(i-1) % tasks.length].t;
+      const svgIcon = iconForField(typeIdx, currentLevel);
+      div.innerHTML = `<span class="fnum" style="color:${tc === '#B85C00' ? '#7A4000' : '#7A6E58'}">${i}</span><div class="ficon">${svgIcon}</div>`;
+    }
+    boardEl.appendChild(div);
+  }
+  updatePawn();
+}
+
+function updatePawn() {
+  document.querySelectorAll('.pawn').forEach(p => p.remove());
+  document.querySelectorAll('.field.active').forEach(f => f.classList.remove('active'));
+  const field = document.getElementById('f' + position);
+  if (field) {
+    field.classList.add('active');
+    const pawn = document.createElement('div');
+    pawn.className = 'pawn';
+    pawn.innerHTML = svgPawn('#B85C00');
+    field.appendChild(pawn);
+  }
+  posLabel.textContent = `Feld ${position} / 30`;
+}
+
+function rollDice() {
+  rollBtn.disabled = true;
+  let rolls = 0;
+  const interval = setInterval(() => {
+    const r = Math.floor(Math.random() * 6) + 1;
+    renderDiceFace(r);
+    rolls++;
+    if (rolls >= 10) {
+      clearInterval(interval);
+      renderDiceFace(r);
+      movePawn(r);
+    }
+  }, 60);
+}
+
+function movePawn(steps) {
+  const newPos = Math.min(position + steps, 30);
+  const interval = setInterval(() => {
+    position++;
+    if (position > newPos) position = newPos;
+    updatePawn();
+    if (position >= newPos) {
+      clearInterval(interval);
+      if (position === 30) showWin();
+      else showTask(position);
+    }
+  }, 200);
+}
+
+function showTask(pos) {
+  const tasks = TASKS[currentLevel];
+  const types = TASK_TYPES[currentLevel];
+  const task = tasks[(pos - 1) % tasks.length];
+  const type = types[task.t];
+  const isB = currentLevel === 'b';
+  const fn = ICON_FNS[type.iconFn];
+  const iconHtml = fn ? fn(type.tc) : '';
+
+  // Reset flip state
+  flipInner.classList.remove('flipped');
+
+  // Front: question
+  popupContent.innerHTML = `
+    <span class="task-label" style="background:${type.bg};color:${type.tc};">
+      ${iconHtml} ${type.label}
+    </span>
+    <p class="task-text">${task.q}</p>
+  `;
+
+  // Back: solution (only if exists)
+  if (task.a) {
+    flipBtn.style.display = '';
+    popupSolution.innerHTML = `
+      <div class="solution-label">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1.5a6.5 6.5 0 100 13 6.5 6.5 0 000-13zM7 11V7h2v4H7zm0-5V4h2v2H7z" fill="#5C6B2E"/></svg>
+        Musterlösung
+      </div>
+      <p class="solution-text">${task.a}</p>
+    `;
+  } else {
+    flipBtn.style.display = 'none';
+    popupSolution.innerHTML = '';
+  }
+
+  popupBox.className = isB ? 'b-level' : '';
+  popupClose.className = isB ? 'b-close' : '';
+  popupCloseBack.className = isB ? 'b-close' : '';
+  popupBox.style.animation = 'none';
+  popupBox.offsetHeight;
+  popupBox.style.animation = '';
+  overlay.classList.add('open');
+
+  flipBtn.onclick = () => flipInner.classList.add('flipped');
+
+  const closeAll = () => {
+    overlay.classList.remove('open');
+    flipInner.classList.remove('flipped');
+    rollBtn.disabled = false;
+  };
+  popupClose.onclick = closeAll;
+  popupCloseBack.onclick = closeAll;
+}
+
+function showWin() {
+  const isB = currentLevel === 'b';
+  popupContent.innerHTML = `
+    <div style="padding: 0.5rem 0;">
+      <div style="margin-bottom: 0.75rem;">${svgTrophy('#C4607A').replace('width="22" height="22"','width="48" height="48"').replace('viewBox="0 0 22 22"','viewBox="0 0 22 22"')}</div>
+      <p style="font-family:'Barlow Condensed',sans-serif; font-weight:800; font-size:clamp(1.8rem,5vw,2.4rem); letter-spacing:0.08em; color:#C4607A; margin-bottom:8px;">Glückwunsch!</p>
+      <p style="font-family:'Barlow',sans-serif; font-size:clamp(1.1rem,2vw,0.9rem); color:#7A6E58; letter-spacing:0.05em;">⭐️ Du hast das Ziel erreicht.<br>Danke fürs Mitmachen und viel Erfolg beim Deutschlernen!</p>
+    </div>
+  `;
+  flipBtn.style.display = 'none';
+  popupSolution.innerHTML = '';
+  popupBox.className = isB ? 'b-level' : '';
+  popupClose.textContent = 'Nochmal spielen';
+  popupClose.className = isB ? 'b-close' : '';
+  popupBox.style.animation = 'none';
+  popupBox.offsetHeight;
+  popupBox.style.animation = '';
+  overlay.classList.add('open');
+  popupClose.onclick = () => {
+    overlay.classList.remove('open');
+    popupClose.textContent = 'Fertig — weiter spielen';
+    restartGame();
+  };
+}
+
+function restartGame() {
+  position = 0;
+  overlay.classList.remove('open');
+  buildBoard();
+  taskCard.innerHTML = '<p class="task-text" style="color:#5A4E38;">→ Klick auf den Würfel, um loszuspielen.</p>';
+  renderDiceFace(1);
+  rollBtn.disabled = false;
+}
+
+rollBtn.onclick = rollDice;
+renderDiceFace(1);
+buildBoard();
+</script>
+
+<footer>
+  <div class="footer-inner">
+    <p class="footer-brand">Deutsch-Training mit Ella D.</p>
+    <p class="footer-tagline">Interaktives Deutsch — zum Lernen, Sprechen, Unterrichten.<br>Hauptsache — für Dich :)</p>
+    <div class="footer-links">
+      <a href="https://t.me/deutsch_lab_space" target="_blank" class="footer-btn tg">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+        Telegram
+      </a>
+      <a href="https://www.instagram.com/tut_fantastisch" target="_blank" class="footer-btn ig">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+        Instagram
+      </a>
+      <a href="https://threads.net/@tut_fantastisch" target="_blank" class="footer-btn threads">
+        <svg width="15" height="15" viewBox="0 0 192 192" fill="currentColor" aria-hidden="true"><path d="M141.537 88.988a66.667 66.667 0 0 0-2.518-1.143c-1.482-27.307-16.403-42.94-41.457-43.1h-.34c-14.986 0-27.449 6.396-35.12 18.05l13.324 9.152c5.356-8.136 13.674-12.108 23.88-12.108h.229c9.204.06 16.175 2.739 20.727 7.965 3.291 3.73 5.496 8.926 6.579 15.495a97.94 97.94 0 0 0-14.092-.822c-14.08 0-25.958 3.769-33.585 10.603-8.043 7.203-12.141 17.412-11.469 29.167.711 12.508 6.706 22.571 16.879 28.35 8.568 4.929 19.557 7.286 30.604 6.616 14.95-.918 27.476-6.667 36.242-16.63 7.125-8.098 11.449-18.659 12.862-31.382 7.706 4.648 13.397 10.806 16.558 18.237 5.186 12.15 5.5 32.083-10.175 47.758-13.818 13.818-30.459 19.812-55.612 20-27.966-.2-49.144-9.16-62.938-26.63C19.708 139.08 13.586 117.42 13.354 90.05c.232-27.37 6.354-49.03 18.196-64.377C45.344 8.178 66.522-.782 94.488-1c28.172.22 49.847 9.234 64.416 26.78 7.188 8.723 12.73 19.755 16.345 32.515l15.657-4.196c-4.26-15.254-11.043-28.673-20.153-39.675C153.955 10.463 128.354-.354 94.716-.6h-.255C60.786-.354 35.591 10.463 19.135 32.316 4.457 52.25-2.233 79.3-2.498 90.05v.15c.265 10.75 6.955 37.8 21.633 57.684 16.456 21.853 41.651 32.67 74.94 32.906h.255c29.604-.208 50.8-8.058 68.213-25.47 22.63-22.63 21.98-50.474 14.456-67.79-5.332-12.434-15.454-22.082-35.462-28.542zm-30.863 46.314c-6.166 3.611-13.695 5.468-21.792 5.468-1.287 0-2.581-.056-3.835-.168-9.965-.893-17.34-6.107-19.773-13.827-1.342-4.281-.906-8.582 1.228-12.107 3.728-6.117 11.47-9.491 21.698-9.491 3.606 0 7.247.362 10.82 1.077 5.482 1.097 10.23 2.946 14.106 5.495l.328.215c-1.174 10.61-2.78 21.02-2.78 23.338z"/></svg>
+        Threads
+      </a>
+    </div>
+    <p class="footer-more">Fragen, Ideen, Vorschläge, Zusammenarbeit → <a href="mailto:ella.sprachcoach.de@email.com?subject=Anfrage%20über%20Deutsch-Training/Lerntools&body=Hallo%20Ella," style="color:#005cb8;">schreib mir 👋</a></p>
+  </div>
+</footer>
+</body>
+</html>
