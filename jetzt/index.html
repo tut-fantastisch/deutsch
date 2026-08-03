@@ -858,25 +858,6 @@ function toggleAudioSpeed() {
           <button class="restart-btn" onclick="restartQuiz()">Noch mal üben</button>
         </div>`;
       return;
-
-      // Enable Tap-to-Show for mobile tooltips
-  document.querySelectorAll('.word-hint').forEach(el => {
-    el.addEventListener('click', (e) => {
-      e.stopPropagation(); // Prevents instant closing
-      
-      const isAlreadyOpen = el.classList.contains('show-hint');
-      
-      // Close all open tooltips first
-      document.querySelectorAll('.word-hint').forEach(other => {
-        other.classList.remove('show-hint');
-      });
-      
-      // Toggle the clicked one
-      if (!isAlreadyOpen) {
-        el.classList.add('show-hint');
-      }
-    });
-  });
     }
 
     const q = quiz[qIdx];
@@ -938,6 +919,29 @@ function toggleAudioSpeed() {
         <button class="btn" onclick="nextQ()" ${wasAnswered ? '' : 'disabled'}>Weiter →</button>
       </div>
     `;
+    attachTooltipListeners();
+  }
+
+  function attachTooltipListeners() {
+    document.querySelectorAll('.word-hint').forEach(el => {
+      const toggleHint = (e) => {
+        e.stopPropagation();
+        e.preventDefault(); // Prevents double firing on mobile
+        
+        const isAlreadyOpen = el.classList.contains('show-hint');
+        
+        document.querySelectorAll('.word-hint').forEach(other => {
+          other.classList.remove('show-hint');
+        });
+        
+        if (!isAlreadyOpen) {
+          el.classList.add('show-hint');
+        }
+      };
+
+      el.addEventListener('touchend', toggleHint);
+      el.addEventListener('click', toggleHint);
+    });
   }
 
   function playCurrentSentence() {
@@ -1011,9 +1015,15 @@ function highlightWords(text) {
   }
 
   // Close mobile tooltips when clicking anywhere else
-document.addEventListener('click', () => {
-  document.querySelectorAll('.word-hint').forEach(el => el.classList.remove('show-hint'));
-});
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.word-hint').forEach(el => el.classList.remove('show-hint'));
+  });
+  document.addEventListener('touchend', (e) => {
+    if (!e.target.classList.contains('word-hint')) {
+      document.querySelectorAll('.word-hint').forEach(el => el.classList.remove('show-hint'));
+    }
+  });
+  
 </script>
 
 </body>
