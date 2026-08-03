@@ -3,12 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <meta name="description" content="Interaktive Quiz-Übung für Deutschlernende. Thema: Jetzt, gerade oder gleich?">
-<meta property="og:title" content="Jetzt, gerade oder gleich?">
-  <meta property="og:description" content="Interaktive Quiz-Übung: Jetzt, gerade oder gleich im Kontext üben · Deutsch-Training mit Ella">
-  <meta property="og:url" content="https://tut-fantastisch.github.io/deutsch/jetzt/">
-  <meta property="og:type" content="website">
-<title>Jetzt, gerade oder gleich? · Deutsch-Training mit Ella</title>
+<title>Jetzt, gerade oder gleich? · DeutschLab</title>
+
+<!-- Open Graph / link preview -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Jetzt, gerade oder gleich? · DeutschLab">
+<meta property="og:description" content="Kurz-Training: 3 способи сказати «зараз» німецькою. Коротке пояснення + практика з озвучкою.">
+<meta property="og:url" content="https://tut-fantastisch.github.io/deutsch/jetzt/">
+<meta property="og:site_name" content="Deutsch Tut Fantastisch">
+
+<meta name="twitter:title" content="Jetzt, gerade oder gleich? · Interaktives Training">
+<meta name="twitter:description" content="3 способи сказати «зараз» німецькою — з поясненням і практикою.">
+
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -326,6 +332,30 @@
   .feedback-box.wrong-fb .fb-verdict { color: var(--rose); }
   .feedback-box .fb-ua { color: var(--tan); font-style: italic; margin-top: 0.3rem; }
 
+  .fb-sound-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; }
+  .sound-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 38px;
+    padding: 0 0.9rem;
+    border: 2px solid var(--orange);
+    background: transparent;
+    color: var(--orange);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.12s, color 0.12s;
+  }
+  .sound-btn:hover:not(:disabled) { background: var(--orange); color: var(--ink); }
+  .sound-btn:disabled { opacity: 0.35; cursor: default; }
+  .sound-btn.speaking { background: var(--orange); color: var(--ink); }
+  .sound-btn .icon { font-size: 15px; line-height: 1; }
+  .tts-note { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 0.35rem; }
+
   .controls {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -574,8 +604,8 @@
   <div class="footer-inner">
     <div class="footer-top">
       <div class="footer-brand">
-        <span class="footer-logo">Deutsch<span>Lab</span> by Ella</span>
-        <p class="footer-tagline">Deutsch üben: bewusst & produktiv — für die, die wirklich sprechen wollen.</p>
+        <span class="footer-logo">Deutsch<span>Lab</span></span>
+        <p class="footer-tagline">Deutsch üben: bewusst & praktisch — für die, die wirklich sprechen wollen.</p>
       </div>
     </div>
     <div class="footer-divider"></div>
@@ -597,31 +627,238 @@
           </a>
         </div>
       </div>
-      <p class="footer-copy">© 2026 Deutsch-Training mit Ella D.</p>
+      <p class="footer-copy">© 2026 DeutschLab · Deutsch-Training mit Ella D.</p>
     </div>
   </div>
 </footer>
 
 <script type="application/json" id="quizData">
 [
-  {"sentence":"___ nutzen viele Firmen KI-Tools ganz selbstverständlich.","answer":"jetzt","fb":"jetzt ~ heutzutage: eine allgemeine, globale Veränderung über die Zeit.","fbUa":"більш глобально — «тепер», у наш час."},
-  {"sentence":"Ich kann nicht sprechen, ich sitze ___ in einem Meeting.","answer":"gerade","fb":"gerade ~ in diesem Augenblick: genau in dieser Sekunde passiert es.","fbUa":"от прям зараз роблю."},
-  {"sentence":"Beeil dich, der Film fängt ___ an!","answer":"gleich","fb":"gleich ~ ganz bald: es passiert nicht sofort, aber sehr bald.","fbUa":"от-от відбудеться."},
-  {"sentence":"___ habe ich mehr Selbstvertrauen als vor ein paar Jahren.","answer":"jetzt","fb":"jetzt ~ aktueller Zustand: wie es in diesem Lebensabschnitt bei mir ist.","fbUa":"стан на зараз."},
-  {"sentence":"Ich habe ___ mit meiner Mutter telefoniert, sie hat tolle Neuigkeiten.","answer":"gerade","fb":"gerade ~ kurz davor: es ist erst vor Kurzem passiert.","fbUa":"щойно."},
-  {"sentence":"Schau, der Bus kommt — ___ steigen wir ein.","answer":"gleich","fb":"gleich ~ ganz bald: etwas steht unmittelbar bevor.","fbUa":"от-от відбудеться."},
-  {"sentence":"Was machst du ___? – Ich koche ___ das Abendessen.","answer":"gerade","fb":"gerade ~ in diesem Augenblick: genau jetzt, während du sprichst.","fbUa":"от прям зараз роблю."},
-  {"sentence":"___, im 21. Jahrhundert, reisen die Menschen viel öfter als früher.","answer":"jetzt","fb":"jetzt ~ heutzutage: ein globaler Vergleich über eine längere Zeitspanne.","fbUa":"більш глобально — «тепер»."},
-  {"sentence":"Ich bin ___ angekommen, gib mir zwei Minuten.","answer":"gerade","fb":"gerade ~ kurz davor: die Ankunft liegt nur Sekunden zurück.","fbUa":"щойно."},
-  {"sentence":"Bleib noch kurz, das Essen ist ___ fertig.","answer":"gleich","fb":"gleich ~ ganz bald: es dauert nur noch einen Moment.","fbUa":"от-от відбудеться."},
-  {"sentence":"Ich weiß nicht genau, wie spät es ist, aber ich muss ___ los.","answer":"gleich","fb":"gleich ~ ganz bald: der Abschied steht unmittelbar bevor.","fbUa":"от-от відбудеться."},
-  {"sentence":"___ habe ich einen festen Job und eine eigene Wohnung.","answer":"jetzt","fb":"jetzt ~ aktueller Zustand: so ist die Lage momentan in meinem Leben.","fbUa":"стан на зараз."}
+  {"sentence":"___ nutzen viele Firmen KI-Tools ganz selbstverständlich.","answer":"jetzt","fb":"jetzt ~ heutzutage: eine allgemeine, globale Veränderung über die Zeit.","fbUa":"більш глобально — «тепер», у наш час.","audio":"audio/satz-01.mp3"},
+  {"sentence":"Ich kann nicht sprechen, ich sitze ___ in einem Meeting.","answer":"gerade","fb":"gerade ~ in diesem Augenblick: genau in dieser Sekunde passiert es.","fbUa":"от прям зараз роблю.","audio":"audio/satz-02.mp3"},
+  {"sentence":"Beeil dich, der Film fängt ___ an!","answer":"gleich","fb":"gleich ~ ganz bald: es passiert nicht sofort, aber sehr bald.","fbUa":"от-от відбудеться.","audio":"audio/satz-03.mp3"},
+  {"sentence":"___ habe ich mehr Selbstvertrauen als vor ein paar Jahren.","answer":"jetzt","fb":"jetzt ~ aktueller Zustand: wie es in diesem Lebensabschnitt bei mir ist.","fbUa":"стан на зараз.","audio":"audio/satz-04.mp3"},
+  {"sentence":"Ich habe ___ mit meiner Mutter telefoniert, sie hat tolle Neuigkeiten.","answer":"gerade","fb":"gerade ~ kurz davor: es ist erst vor Kurzem passiert.","fbUa":"щойно.","audio":"audio/satz-05.mp3"},
+  {"sentence":"Schau, der Bus kommt — ___ steigen wir ein.","answer":"gleich","fb":"gleich ~ ganz bald: etwas steht unmittelbar bevor.","fbUa":"от-от відбудеться.","audio":"audio/satz-06.mp3"},
+  {"sentence":"Was machst du ___? – Ich koche ___ das Abendessen.","answer":"gerade","fb":"gerade ~ in diesem Augenblick: genau jetzt, während du sprichst.","fbUa":"от прям зараз роблю.","audio":"audio/satz-07.mp3"},
+  {"sentence":"___, im 21. Jahrhundert, reisen die Menschen viel öfter als früher.","answer":"jetzt","fb":"jetzt ~ heutzutage: ein globaler Vergleich über eine längere Zeitspanne.","fbUa":"більш глобально — «тепер».","audio":"audio/satz-08.mp3"},
+  {"sentence":"Ich bin ___ angekommen, gib mir zwei Minuten.","answer":"gerade","fb":"gerade ~ kurz davor: die Ankunft liegt nur Sekunden zurück.","fbUa":"щойно.","audio":"audio/satz-09.mp3"},
+  {"sentence":"Bleib noch kurz, das Essen ist ___ fertig.","answer":"gleich","fb":"gleich ~ ganz bald: es dauert nur noch einen Moment.","fbUa":"от-от відбудеться.","audio":"audio/satz-10.mp3"},
+  {"sentence":"Ich weiß nicht genau, wie spät es ist, aber ich muss ___ los.","answer":"gleich","fb":"gleich ~ ganz bald: der Abschied steht unmittelbar bevor.","fbUa":"от-от відбудеться.","audio":"audio/satz-11.mp3"},
+  {"sentence":"___ habe ich einen festen Job und eine eigene Wohnung.","answer":"jetzt","fb":"jetzt ~ aktueller Zustand: so ist die Lage momentan in meinem Leben.","fbUa":"стан на зараз.","audio":"audio/satz-12.mp3"}
 ]
 </script>
 
 <script>
   const quiz = JSON.parse(document.getElementById('quizData').textContent);
   const OPTIONS = ['jetzt', 'gerade', 'gleich'];
+
+  function setSoundButtonsUI(speaking) {
+    document.querySelectorAll('.sound-btn').forEach(btn => btn.classList.toggle('speaking', speaking));
+  }
+
+  // ===== AUDIO PLAYER (pre-recorded MP3s, TTS as safety-net fallback) =====
+  const AudioPlayer = (() => {
+    const el = new Audio();
+    let currentUrl = null;
+
+    el.addEventListener('play', () => setSoundButtonsUI(true));
+    el.addEventListener('ended', () => setSoundButtonsUI(false));
+    el.addEventListener('pause', () => setSoundButtonsUI(false));
+    el.addEventListener('error', () => {
+      setSoundButtonsUI(false);
+      if (currentUrl && AudioPlayer._fallbackText) {
+        console.warn('[Audio] Datei nicht gefunden, weiche auf Gerätestimme aus:', currentUrl);
+        Speech.speak(AudioPlayer._fallbackText);
+      }
+    });
+
+    return {
+      _fallbackText: '',
+      play(url, fallbackText) {
+        this._fallbackText = fallbackText || '';
+        if (!url) { Speech.speak(fallbackText); return; }
+        currentUrl = url;
+        if (el.src.endsWith(url) === false) el.src = url;
+        el.currentTime = 0;
+        el.play().catch(() => {
+          // Autoplay/decoding blocked or file missing — fall back to TTS
+          setSoundButtonsUI(false);
+          Speech.speak(fallbackText);
+        });
+      }
+    };
+  })();
+
+  // ===== SPEECH ENGINE (German TTS, cross-browser) =====
+  const Speech = (() => {
+    let supported = false, ready = false, speaking = false, germanVoice = null, voiceLoadAttempts = 0;
+    let voiceLabel = 'Stimme wird geladen …';
+    const MAX_VOICE_ATTEMPTS = 40;
+    const synth = window.speechSynthesis;
+    const ua = navigator.userAgent;
+    const isAndroid = /Android/.test(ua);
+    const isBlink = !!window.chrome || /OPR|Edg/.test(ua); // Chrome/Edge/Opera share the Blink TTS bug
+
+    function pickGermanVoice(voices) {
+      if (!voices.length) return null;
+      const EXACT_PREFERRED = [
+        'Yannick', 'Jana', 'Markus', 'Anna (Enhanced)', 'Petra (Enhanced)',
+        'Google Deutsch', 'Google Deutsch (Deutschland)',
+        'Microsoft Katja Online (Natural) - German (Germany)',
+        'Microsoft Conrad Online (Natural) - German (Germany)',
+        'Microsoft Katja - German (Germany)', 'Microsoft Stefan - German (Germany)',
+        'Microsoft Hedda - German (Germany)', 'Anna', 'Petra'
+      ];
+      for (const name of EXACT_PREFERRED) {
+        const v = voices.find(v => v.name === name);
+        if (v) return v;
+      }
+      const de = voices.filter(v => /^de/i.test(v.lang));
+      if (!de.length) return voices.find(v => v.localService) || voices[0] || null;
+
+      let v;
+      // Tier 1: recognizable premium/branded voices, by name pattern (covers
+      // naming variants like "de-DE-Wavenet-C" that exact-match lists miss)
+      v = de.find(v => /enhanced|premium|neural|wavenet|natural/i.test(v.name)); if (v) return v;
+      v = de.find(v => /google/i.test(v.name)); if (v) return v;
+      v = de.find(v => /microsoft/i.test(v.name)); if (v) return v;
+      // Tier 2: any non-local (cloud/network) German voice — these are
+      // typically proper branded engines even if unnamed, and outperform
+      // bare on-device synthesizers like generic "German Germany".
+      v = de.find(v => v.localService === false); if (v) return v;
+      // Tier 3: a locally installed German voice with a real, specific name
+      // (not just the bare language label the OS shows when no real voice
+      // pack is installed).
+      v = de.find(v => v.localService && !/^german|^deutsch$/i.test(v.name.trim())); if (v) return v;
+      // Last resort: whatever German-tagged voice exists, even generic.
+      return de[0];
+    }
+
+    // A generic system fallback (no real name, no cloud voice) can't be
+    // fixed via text tricks — flag it so the UI can nudge the user once.
+    function isLowQualityVoice(v) {
+      if (!v) return true;
+      if (v.localService === false) return false; // cloud voices are reliable
+      return /^german|^deutsch$/i.test(v.name.trim());
+    }
+
+    function tryLoadVoices() {
+      if (!synth) return;
+      const voices = synth.getVoices();
+      if (voices.length > 0) {
+        germanVoice = pickGermanVoice(voices);
+        ready = true;
+        updateButtons();
+        const lowQ = isLowQualityVoice(germanVoice);
+        voiceLabel = 'Stimme: ' + (germanVoice ? `${germanVoice.name} (${germanVoice.lang})` : 'keine deutsche Stimme gefunden — Browser-Standard');
+        console.log('[Speech] aktive Stimme:', voiceLabel, lowQ ? '(niedrige Qualität erkannt)' : '');
+        const dbg = document.getElementById('voiceDebug');
+        if (dbg) dbg.textContent = voiceLabel;
+        const hint = document.getElementById('voiceHint');
+        if (hint) hint.style.display = lowQ ? 'block' : 'none';
+        return;
+      }
+      voiceLoadAttempts++;
+      if (voiceLoadAttempts < MAX_VOICE_ATTEMPTS) {
+        setTimeout(tryLoadVoices, 150);
+      } else {
+        ready = true; // fall back to browser default voice
+        updateButtons();
+        voiceLabel = 'Stimme: Browser-Standard (keine deutsche Stimme erkannt)';
+        const dbg = document.getElementById('voiceDebug');
+        if (dbg) dbg.textContent = voiceLabel;
+      }
+    }
+
+    function init() {
+      if (!synth || typeof SpeechSynthesisUtterance === 'undefined') return;
+      supported = true;
+      synth.onvoiceschanged = () => { if (!ready) tryLoadVoices(); };
+      tryLoadVoices();
+      // Chrome/Blink stops speaking after ~15s on long queues unless nudged
+      if (isBlink || isAndroid) {
+        setInterval(() => {
+          if (synth.speaking && !synth.paused) { synth.pause(); synth.resume(); }
+        }, 14000);
+      }
+    }
+
+    function updateButtons() {
+      document.querySelectorAll('.sound-btn').forEach(btn => {
+        btn.disabled = !supported;
+      });
+    }
+
+    let _wt = null;
+    function _startWatchdog() {
+      clearTimeout(_wt);
+      _wt = setTimeout(() => {
+        if (synth.speaking) { synth.cancel(); setSpeakingUI(false); speaking = false; }
+      }, 9000);
+    }
+
+    function setSpeakingUI(on) {
+      setSoundButtonsUI(on);
+    }
+
+    // Fixes for words the TTS engine tends to mispronounce (visible text stays unchanged)
+    // Punkt-Konvention (wie "U.S.A.") signalisiert der Engine zuverlässig:
+    // "das ist eine Abkürzung, bitte buchstabieren" — statt es als normales
+    // kurzes Wort vorzulesen.
+    // Kein Pronunciation-Fix mehr — Respelling-Versuche (Ka-I, K.I., SSML, ...)
+    // haben sich als unzuverlässig erwiesen. "KI" bleibt unverändert, die
+    // gewählte deutsche Stimme entscheidet über die natürliche Aussprache.
+    const PRONUNCIATION_FIXES = [];
+    function forSpeech(text) {
+      let out = text;
+      PRONUNCIATION_FIXES.forEach(([pattern, replacement]) => { out = out.replace(pattern, replacement); });
+      return out;
+    }
+
+    function speak(text) {
+      if (!supported || !text) return;
+      if (!ready) {
+        // German voice list hasn't finished loading yet — wait rather than
+        // risk falling back to the browser's (often English) default voice.
+        setTimeout(() => speak(text), 150);
+        return;
+      }
+      const spokenText = forSpeech(text);
+      if (synth.speaking || synth.pending) {
+        synth.cancel();
+        setTimeout(() => _doSpeak(spokenText), isBlink ? 100 : 30);
+      } else {
+        _doSpeak(spokenText);
+      }
+    }
+
+    function _doSpeak(text) {
+      const utt = new SpeechSynthesisUtterance(text);
+      utt.lang = 'de-DE';
+      utt.rate = 0.92;
+      utt.pitch = 1.0;
+      utt.volume = 1.0;
+      // Explicitly force the German voice object (not just utt.lang) —
+      // some browsers otherwise fall back to the system default voice/language.
+      if (germanVoice) { try { utt.voice = germanVoice; } catch (e) {} }
+      utt.onstart = () => { speaking = true; setSpeakingUI(true); };
+      utt.onend = () => { clearTimeout(_wt); speaking = false; setSpeakingUI(false); };
+      utt.onerror = (e) => {
+        clearTimeout(_wt); speaking = false; setSpeakingUI(false);
+        if (e.error && e.error !== 'interrupted' && e.error !== 'canceled') console.warn('[Speech] error:', e.error);
+      };
+      try {
+        synth.speak(utt);
+        if (isBlink) _startWatchdog();
+      } catch (err) {
+        speaking = false; setSpeakingUI(false);
+      }
+    }
+
+    return { init, speak, get supported() { return supported; }, get voiceLabel() { return voiceLabel; } };
+  })();
+  Speech.init();
 
   let qIdx = 0;
   let answered = new Array(quiz.length).fill(null); // null | true | false
@@ -646,6 +883,21 @@
       else if (answered[i] === false) cls += ' wrong';
       return `<div class="${cls}"></div>`;
     }).join('');
+  }
+
+  function fullSentenceFor(idx) {
+    const q = quiz[idx];
+    const parts = q.sentence.split('___');
+    const startsWithBlank = parts[0].trim() === '';
+    let result = '';
+    parts.forEach((part, i) => {
+      result += part;
+      if (i < parts.length - 1) {
+        const isStart = i === 0 && startsWithBlank;
+        result += isStart ? q.answer.charAt(0).toUpperCase() + q.answer.slice(1) : q.answer;
+      }
+    });
+    return result;
   }
 
   function renderQuestion() {
@@ -673,6 +925,7 @@
     const startsWithBlank = parts[0].trim() === '';
 
     let sentenceHtml = '';
+    const fullSentence = wasAnswered ? fullSentenceFor(qIdx) : '';
     parts.forEach((part, i) => {
       sentenceHtml += part;
       if (i < parts.length - 1) {
@@ -701,6 +954,15 @@
       <div class="q-card">
         <div class="q-tag">Wähle: jetzt, gerade oder gleich</div>
         <div class="q-sentence">${sentenceHtml}</div>
+        ${wasAnswered ? `
+        <div class="fb-sound-row">
+          <button class="sound-btn" onclick="playCurrentSentence()" ${Speech.supported ? '' : 'disabled'}>
+            <span class="icon">🔊</span> Anhören
+          </button>
+          ${Speech.supported ? '' : '<span class="tts-note">Sprachausgabe hier nicht verfügbar</span>'}
+        </div>
+        <div class="tts-note" id="voiceDebug">${Speech.voiceLabel}</div>
+        <div class="tts-note" id="voiceHint" style="display:none;">Für bessere Aussprache: Sprachausgabe-Stimme in den Handyeinstellungen aktualisieren (Google-Sprachausgabe → Deutsch installieren).</div>` : ''}
       </div>
       <div class="options-row">${optionsHtml}</div>
       <div class="feedback-box ${wasAnswered ? (answered[qIdx] ? 'right-fb show' : 'wrong-fb show') : ''}">
@@ -713,6 +975,11 @@
         <button class="btn" onclick="nextQ()" ${wasAnswered ? '' : 'disabled'}>Weiter →</button>
       </div>
     `;
+  }
+
+  function playCurrentSentence() {
+    const q = quiz[qIdx];
+    AudioPlayer.play(q.audio, fullSentenceFor(qIdx));
   }
 
   function pick(opt) {
@@ -739,7 +1006,15 @@
     renderQuestion();
   }
 
+  function shuffleInPlace(arr) {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
   function restartQuiz() {
+    shuffleInPlace(quiz);
     qIdx = 0;
     answered = new Array(quiz.length).fill(null);
     score = 0;
