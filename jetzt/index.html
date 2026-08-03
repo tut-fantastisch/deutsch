@@ -7,13 +7,13 @@
 
 <!-- Open Graph / link preview -->
 <meta property="og:type" content="website">
-<meta property="og:title" content="Jetzt, gerade oder gleich? · DeutschLab">
+<meta property="og:title" content="Jetzt, gerade oder gleich? · DeutschLab by Ella">
 <meta property="og:description" content="Kurz-Training: 3 способи сказати «зараз» німецькою. Коротке пояснення + практика з озвучкою.">
 <meta property="og:url" content="https://tut-fantastisch.github.io/deutsch/jetzt/">
 <meta property="og:site_name" content="Deutsch Tut Fantastisch">
 
 <meta name="twitter:title" content="Jetzt, gerade oder gleich? · Interaktives Training">
-<meta name="twitter:description" content="3 способи сказати «зараз» німецькою — з поясненням і практикою.">
+<meta name="twitter:description" content="Kurz-Training: 3 способи сказати «зараз» німецькою. Коротке пояснення + практика з озвучкою.">
 
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=Barlow:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
@@ -26,6 +26,7 @@
     --orange:  #B85C00;
     --olive:   #5C6B2E;
     --tan:     #C4A97A;
+    --vivid:   #dbfe01;
     --muted:   #7A6B59;
     --yellow:  #FEEF9F;
     --blue:    #005cb8;
@@ -152,7 +153,7 @@
     font-size: 1.8rem;
     font-weight: 900;
     text-transform: uppercase;
-    letter-spacing: -0.5px;
+    letter-spacing: 1px;
     color: var(--orange);
   }
   .word-block-body { padding: 1.1rem 1.25rem 1.3rem; }
@@ -166,7 +167,7 @@
 
   .sense-label {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.75rem;
+    font-size: 1rem;
     font-weight: 700;
     letter-spacing: 0.2em;
     text-transform: uppercase;
@@ -256,12 +257,12 @@
   }
   .q-tag {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     font-weight: 700;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--orange);
-    margin-bottom: 0.6rem;
+    margin-bottom: 1rem;
   }
   .q-sentence {
     font-size: 1.25rem;
@@ -354,7 +355,90 @@
   .sound-btn:disabled { opacity: 0.35; cursor: default; }
   .sound-btn.speaking { background: var(--orange); color: var(--ink); }
   .sound-btn .icon { font-size: 15px; line-height: 1; }
-  .tts-note { font-size: 11px; color: var(--muted); font-style: italic; margin-top: 0.35rem; }
+
+  .fb-sound-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.speed-btn {
+  background: transparent;
+  border: 1.5px solid var(--ink);
+  font-family: 'Barlow Condensed', sans-serif;
+  color: var(--ink);
+  border-radius: none;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+/* Optional: Slight feedback when active/hovered */
+.speed-btn:hover {
+  background-color: var(--tan);
+}
+
+.speed-btn.slow {
+  border-color: var(--orange);
+  color: var(--orange);
+  background-color: rgba(184, 92, 0, 0.08);
+}
+
+/* ===== 🗯️ VOCABULARY HINT (Tooltip) ===== */
+.word-hint {
+  font-family: 'Barlow', sans-serif;
+  text-decoration: underline dotted var(--orange);
+  text-underline-offset: 4px;
+  cursor: pointer;
+  position: relative;
+  display: inline-block;
+}
+
+/* Tooltip Bubble */
+.word-hint::after {
+  content: attr(data-ua);
+  position: absolute;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  
+  /* Styling using your palette */
+  background-color: var(--ink);
+  color: var(--vivid);
+  border: 1px solid var(--tan);
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  line-height: 1.2;
+  padding: 5px 9px;
+  border-radius: 6px;
+  white-space: nowrap;
+
+/* Visiblity logic */
+opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 20;
+  box-shadow: 0 4px 12px rgba(42, 33, 24, 0.15);
+}
+
+/* Laptop Hover Effect */
+@media (hover: hover) {
+  .word-hint:hover::after {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(-3px);
+  }
+}
+
+/* Mobile Tap Toggle Class */
+.word-hint.show-hint::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(-3px);
+}
 
   .controls {
     display: grid;
@@ -490,7 +574,7 @@
 
   .footer-copy {
     font-family: 'Barlow Condensed', sans-serif;
-    font-size: 11px;
+    font-size: 0.8rem;
     color: var(--muted);
     letter-spacing: 0.03em;
   }
@@ -580,8 +664,8 @@
     </div>
 
     <div class="outro-banner">
-      Dann hat man weniger Missverständnisse.
-      <span class="ua">Такі нюанси.</span>
+      Dann hat man weniger Missverständnisse. Und ich denke, das ist das Ziel.
+      <span class="ua">Такі нюанси. Запрошую до практики ↓</span>
     </div>
 
     <button class="go-practice-btn" onclick="switchTab('practice')">Jetzt üben →</button>
@@ -652,213 +736,75 @@
 <script>
   const quiz = JSON.parse(document.getElementById('quizData').textContent);
   const OPTIONS = ['jetzt', 'gerade', 'gleich'];
+  let qIdx = 0;
+  let answered = new Array(quiz.length).fill(null);
+  let score = 0;
+  let isAudioUnlocked = false;
+
+  // Global Audio Unlock for iOS / Threads In-App Browser
+  function unlockAudioEngine() {
+    if (isAudioUnlocked) return;
+    const dummy = new Audio();
+    dummy.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+    dummy.play().then(() => {
+      dummy.pause();
+      isAudioUnlocked = true;
+    }).catch(() => {});
+
+    document.removeEventListener('touchstart', unlockAudioEngine);
+    document.removeEventListener('click', unlockAudioEngine);
+  }
+
+  document.addEventListener('touchstart', unlockAudioEngine, { once: true });
+  document.addEventListener('click', unlockAudioEngine, { once: true });
+
+ 
+  // Single HTML5 Audio Player with Speed Control
+const AudioPlayer = (() => {
+  const el = new Audio();
+  let currentSpeed = 1.0; // Default: 100% Speed
+
+  el.addEventListener('play', () => setSoundButtonsUI(true));
+  el.addEventListener('ended', () => setSoundButtonsUI(false));
+  el.addEventListener('pause', () => setSoundButtonsUI(false));
+  el.addEventListener('error', () => setSoundButtonsUI(false));
+
+  return {
+    setSpeed(speed) {
+      currentSpeed = speed;
+      el.playbackRate = speed;
+    },
+    getSpeed() {
+      return currentSpeed;
+    },
+    play(url) {
+      if (!url) return;
+      el.src = url;
+      el.playbackRate = currentSpeed; // Apply selected speed
+      el.currentTime = 0;
+      const promise = el.play();
+      if (promise !== undefined) {
+        promise.catch(err => setSoundButtonsUI(false));
+      }
+    }
+  };
+})();
+
+function toggleAudioSpeed() {
+  const newSpeed = AudioPlayer.getSpeed() === 1.0 ? 0.5 : 1.0;
+  AudioPlayer.setSpeed(newSpeed);
+  
+  // Update speed button text dynamically
+  const btn = document.getElementById('speedToggleBtn');
+  if (btn) {
+    btn.textContent = newSpeed === 1.0 ? '1.0x' : '0.5x 🐢';
+    btn.classList.toggle('slow', newSpeed !== 1.0);
+  }
+}
 
   function setSoundButtonsUI(speaking) {
     document.querySelectorAll('.sound-btn').forEach(btn => btn.classList.toggle('speaking', speaking));
   }
-
-  // ===== AUDIO PLAYER (pre-recorded MP3s, TTS as safety-net fallback) =====
-  const AudioPlayer = (() => {
-    const el = new Audio();
-    let currentUrl = null;
-
-    el.addEventListener('play', () => setSoundButtonsUI(true));
-    el.addEventListener('ended', () => setSoundButtonsUI(false));
-    el.addEventListener('pause', () => setSoundButtonsUI(false));
-    el.addEventListener('error', () => {
-      setSoundButtonsUI(false);
-      if (currentUrl && AudioPlayer._fallbackText) {
-        console.warn('[Audio] Datei nicht gefunden, weiche auf Gerätestimme aus:', currentUrl);
-        Speech.speak(AudioPlayer._fallbackText);
-      }
-    });
-
-    return {
-      _fallbackText: '',
-      play(url, fallbackText) {
-        this._fallbackText = fallbackText || '';
-        if (!url) { Speech.speak(fallbackText); return; }
-        currentUrl = url;
-        if (el.src.endsWith(url) === false) el.src = url;
-        el.currentTime = 0;
-        el.play().catch(() => {
-          // Autoplay/decoding blocked or file missing — fall back to TTS
-          setSoundButtonsUI(false);
-          Speech.speak(fallbackText);
-        });
-      }
-    };
-  })();
-
-  // ===== SPEECH ENGINE (German TTS, cross-browser) =====
-  const Speech = (() => {
-    let supported = false, ready = false, speaking = false, germanVoice = null, voiceLoadAttempts = 0;
-    let voiceLabel = 'Stimme wird geladen …';
-    const MAX_VOICE_ATTEMPTS = 40;
-    const synth = window.speechSynthesis;
-    const ua = navigator.userAgent;
-    const isAndroid = /Android/.test(ua);
-    const isBlink = !!window.chrome || /OPR|Edg/.test(ua); // Chrome/Edge/Opera share the Blink TTS bug
-
-    function pickGermanVoice(voices) {
-      if (!voices.length) return null;
-      const EXACT_PREFERRED = [
-        'Yannick', 'Jana', 'Markus', 'Anna (Enhanced)', 'Petra (Enhanced)',
-        'Google Deutsch', 'Google Deutsch (Deutschland)',
-        'Microsoft Katja Online (Natural) - German (Germany)',
-        'Microsoft Conrad Online (Natural) - German (Germany)',
-        'Microsoft Katja - German (Germany)', 'Microsoft Stefan - German (Germany)',
-        'Microsoft Hedda - German (Germany)', 'Anna', 'Petra'
-      ];
-      for (const name of EXACT_PREFERRED) {
-        const v = voices.find(v => v.name === name);
-        if (v) return v;
-      }
-      const de = voices.filter(v => /^de/i.test(v.lang));
-      if (!de.length) return voices.find(v => v.localService) || voices[0] || null;
-
-      let v;
-      // Tier 1: recognizable premium/branded voices, by name pattern (covers
-      // naming variants like "de-DE-Wavenet-C" that exact-match lists miss)
-      v = de.find(v => /enhanced|premium|neural|wavenet|natural/i.test(v.name)); if (v) return v;
-      v = de.find(v => /google/i.test(v.name)); if (v) return v;
-      v = de.find(v => /microsoft/i.test(v.name)); if (v) return v;
-      // Tier 2: any non-local (cloud/network) German voice — these are
-      // typically proper branded engines even if unnamed, and outperform
-      // bare on-device synthesizers like generic "German Germany".
-      v = de.find(v => v.localService === false); if (v) return v;
-      // Tier 3: a locally installed German voice with a real, specific name
-      // (not just the bare language label the OS shows when no real voice
-      // pack is installed).
-      v = de.find(v => v.localService && !/^german|^deutsch$/i.test(v.name.trim())); if (v) return v;
-      // Last resort: whatever German-tagged voice exists, even generic.
-      return de[0];
-    }
-
-    // A generic system fallback (no real name, no cloud voice) can't be
-    // fixed via text tricks — flag it so the UI can nudge the user once.
-    function isLowQualityVoice(v) {
-      if (!v) return true;
-      if (v.localService === false) return false; // cloud voices are reliable
-      return /^german|^deutsch$/i.test(v.name.trim());
-    }
-
-    function tryLoadVoices() {
-      if (!synth) return;
-      const voices = synth.getVoices();
-      if (voices.length > 0) {
-        germanVoice = pickGermanVoice(voices);
-        ready = true;
-        updateButtons();
-        const lowQ = isLowQualityVoice(germanVoice);
-        voiceLabel = 'Stimme: ' + (germanVoice ? `${germanVoice.name} (${germanVoice.lang})` : 'keine deutsche Stimme gefunden — Browser-Standard');
-        console.log('[Speech] aktive Stimme:', voiceLabel, lowQ ? '(niedrige Qualität erkannt)' : '');
-        const hint = document.getElementById('voiceHint');
-        if (hint) hint.style.display = lowQ ? 'block' : 'none';
-        return;
-      }
-      voiceLoadAttempts++;
-      if (voiceLoadAttempts < MAX_VOICE_ATTEMPTS) {
-        setTimeout(tryLoadVoices, 150);
-      } else {
-        ready = true; // fall back to browser default voice
-        updateButtons();
-        voiceLabel = 'Stimme: Browser-Standard (keine deutsche Stimme erkannt)';
-      }
-    }
-
-    function init() {
-      if (!synth || typeof SpeechSynthesisUtterance === 'undefined') return;
-      supported = true;
-      synth.onvoiceschanged = () => { if (!ready) tryLoadVoices(); };
-      tryLoadVoices();
-      // Chrome/Blink stops speaking after ~15s on long queues unless nudged
-      if (isBlink || isAndroid) {
-        setInterval(() => {
-          if (synth.speaking && !synth.paused) { synth.pause(); synth.resume(); }
-        }, 14000);
-      }
-    }
-
-    function updateButtons() {
-      document.querySelectorAll('.sound-btn').forEach(btn => {
-        btn.disabled = !supported;
-      });
-    }
-
-    let _wt = null;
-    function _startWatchdog() {
-      clearTimeout(_wt);
-      _wt = setTimeout(() => {
-        if (synth.speaking) { synth.cancel(); setSpeakingUI(false); speaking = false; }
-      }, 9000);
-    }
-
-    function setSpeakingUI(on) {
-      setSoundButtonsUI(on);
-    }
-
-    // Fixes for words the TTS engine tends to mispronounce (visible text stays unchanged)
-    // Punkt-Konvention (wie "U.S.A.") signalisiert der Engine zuverlässig:
-    // "das ist eine Abkürzung, bitte buchstabieren" — statt es als normales
-    // kurzes Wort vorzulesen.
-    // Kein Pronunciation-Fix mehr — Respelling-Versuche (Ka-I, K.I., SSML, ...)
-    // haben sich als unzuverlässig erwiesen. "KI" bleibt unverändert, die
-    // gewählte deutsche Stimme entscheidet über die natürliche Aussprache.
-    const PRONUNCIATION_FIXES = [];
-    function forSpeech(text) {
-      let out = text;
-      PRONUNCIATION_FIXES.forEach(([pattern, replacement]) => { out = out.replace(pattern, replacement); });
-      return out;
-    }
-
-    function speak(text) {
-      if (!supported || !text) return;
-      if (!ready) {
-        // German voice list hasn't finished loading yet — wait rather than
-        // risk falling back to the browser's (often English) default voice.
-        setTimeout(() => speak(text), 150);
-        return;
-      }
-      const spokenText = forSpeech(text);
-      if (synth.speaking || synth.pending) {
-        synth.cancel();
-        setTimeout(() => _doSpeak(spokenText), isBlink ? 100 : 30);
-      } else {
-        _doSpeak(spokenText);
-      }
-    }
-
-    function _doSpeak(text) {
-      const utt = new SpeechSynthesisUtterance(text);
-      utt.lang = 'de-DE';
-      utt.rate = 0.92;
-      utt.pitch = 1.0;
-      utt.volume = 1.0;
-      // Explicitly force the German voice object (not just utt.lang) —
-      // some browsers otherwise fall back to the system default voice/language.
-      if (germanVoice) { try { utt.voice = germanVoice; } catch (e) {} }
-      utt.onstart = () => { speaking = true; setSpeakingUI(true); };
-      utt.onend = () => { clearTimeout(_wt); speaking = false; setSpeakingUI(false); };
-      utt.onerror = (e) => {
-        clearTimeout(_wt); speaking = false; setSpeakingUI(false);
-        if (e.error && e.error !== 'interrupted' && e.error !== 'canceled') console.warn('[Speech] error:', e.error);
-      };
-      try {
-        synth.speak(utt);
-        if (isBlink) _startWatchdog();
-      } catch (err) {
-        speaking = false; setSpeakingUI(false);
-      }
-    }
-
-    return { init, speak, get supported() { return supported; }, get voiceLabel() { return voiceLabel; } };
-  })();
-  Speech.init();
-
-  let qIdx = 0;
-  let answered = new Array(quiz.length).fill(null); // null | true | false
-  let score = 0;
 
   document.getElementById('scoreTotal').textContent = quiz.length;
 
@@ -921,9 +867,8 @@
     const startsWithBlank = parts[0].trim() === '';
 
     let sentenceHtml = '';
-    const fullSentence = wasAnswered ? fullSentenceFor(qIdx) : '';
     parts.forEach((part, i) => {
-      sentenceHtml += part;
+      sentenceHtml += highlightWords(part);
       if (i < parts.length - 1) {
         const isSentenceStart = i === 0 && startsWithBlank;
         const displayWord = wasAnswered
@@ -948,16 +893,21 @@
 
     area.innerHTML = `
       <div class="q-card">
-        <div class="q-tag">Wähle: jetzt, gerade oder gleich</div>
+        <div class="q-tag">Wähle: jetzt, gerade oder gleich<br>
+          <span style="text-transform: lowercase; font-size: 1em; opacity: 0.85; color: var(--blue);">
+                А підкреслені слова з 🇺🇦 перекладом.
+          </span>
+        </div>
         <div class="q-sentence">${sentenceHtml}</div>
         ${wasAnswered ? `
         <div class="fb-sound-row">
-          <button class="sound-btn" onclick="playCurrentSentence()" ${Speech.supported ? '' : 'disabled'}>
+          <button class="sound-btn" onclick="playCurrentSentence()">
             <span class="icon">🔊</span> Anhören
           </button>
-          ${Speech.supported ? '' : '<span class="tts-note">Sprachausgabe hier nicht verfügbar</span>'}
-        </div>
-        <div class="tts-note" id="voiceHint" style="display:none;">Für bessere Aussprache: Sprachausgabe-Stimme in den Handyeinstellungen aktualisieren (Google-Sprachausgabe → Deutsch installieren).</div>` : ''}
+          <button id="speedToggleBtn" class="speed-btn ${AudioPlayer.getSpeed() !== 1.0 ? 'slow' : ''}" onclick="toggleAudioSpeed()">
+            ${AudioPlayer.getSpeed() === 1.0 ? '1.0x' : '0.5x 🐢'}
+          </button>
+        </div>` : ''}
       </div>
       <div class="options-row">${optionsHtml}</div>
       <div class="feedback-box ${wasAnswered ? (answered[qIdx] ? 'right-fb show' : 'wrong-fb show') : ''}">
@@ -974,8 +924,33 @@
 
   function playCurrentSentence() {
     const q = quiz[qIdx];
-    AudioPlayer.play(q.audio, fullSentenceFor(qIdx));
+    AudioPlayer.play(q.audio);
   }
+
+  // Dictionary
+  const DICTIONARY = {
+  "selbstverständlich": "само собою зрозуміло",
+  "Selbstvertrauen": "впевненість у собі",
+  "Jahrhundert": "століття",
+  "angekommen": "прибув / приїхав",
+  "unmittelbar": "безпосередньо / от-от",
+  "Beeil dich": "поспішай",
+  "Neuigkeiten": "новини",
+  "Schau": "подивись"
+};
+
+// Autoreplace for found words
+function highlightWords(text) {
+  let result = text;
+  Object.keys(DICTIONARY).forEach(word => {
+    const regex = new RegExp(`\\b(${word})\\b`, 'gi');
+    result = result.replace(regex, (match) => {
+      const translation = DICTIONARY[word] || DICTIONARY[word.toLowerCase()];
+      return `<span class="word-hint" data-ua="${translation}">${match}</span>`;
+    });
+  });
+  return result;
+}
 
   function pick(opt) {
     if (answered[qIdx] !== null) return;
