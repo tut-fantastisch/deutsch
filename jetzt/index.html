@@ -753,8 +753,6 @@
         const lowQ = isLowQualityVoice(germanVoice);
         voiceLabel = 'Stimme: ' + (germanVoice ? `${germanVoice.name} (${germanVoice.lang})` : 'keine deutsche Stimme gefunden — Browser-Standard');
         console.log('[Speech] aktive Stimme:', voiceLabel, lowQ ? '(niedrige Qualität erkannt)' : '');
-        const dbg = document.getElementById('voiceDebug');
-        if (dbg) dbg.textContent = voiceLabel;
         const hint = document.getElementById('voiceHint');
         if (hint) hint.style.display = lowQ ? 'block' : 'none';
         return;
@@ -766,8 +764,6 @@
         ready = true; // fall back to browser default voice
         updateButtons();
         voiceLabel = 'Stimme: Browser-Standard (keine deutsche Stimme erkannt)';
-        const dbg = document.getElementById('voiceDebug');
-        if (dbg) dbg.textContent = voiceLabel;
       }
     }
 
@@ -961,7 +957,6 @@
           </button>
           ${Speech.supported ? '' : '<span class="tts-note">Sprachausgabe hier nicht verfügbar</span>'}
         </div>
-        <div class="tts-note" id="voiceDebug">${Speech.voiceLabel}</div>
         <div class="tts-note" id="voiceHint" style="display:none;">Für bessere Aussprache: Sprachausgabe-Stimme in den Handyeinstellungen aktualisieren (Google-Sprachausgabe → Deutsch installieren).</div>` : ''}
       </div>
       <div class="options-row">${optionsHtml}</div>
