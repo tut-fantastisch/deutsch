@@ -393,18 +393,17 @@
   text-underline-offset: 4px;
   cursor: pointer;
   position: relative;
-  display: inline-block;
+  display: inline;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Tooltip Bubble */
 .word-hint::after {
   content: attr(data-ua);
   position: absolute;
-  bottom: 125%;
+  bottom: 100%;
   left: 50%;
-  transform: translateX(-50%);
-  
-  /* Styling using your palette */
+  transform: translateX(-50%) translateY(-6px);
   background-color: var(--ink);
   color: var(--vivid);
   border: 1px solid var(--tan);
@@ -421,7 +420,7 @@ opacity: 0;
   visibility: hidden;
   pointer-events: none;
   transition: opacity 0.2s ease, transform 0.2s ease;
-  z-index: 20;
+  z-index: 999;
   box-shadow: 0 4px 12px rgba(42, 33, 24, 0.15);
 }
 
@@ -436,9 +435,8 @@ opacity: 0;
 
 /* Mobile Tap Toggle Class */
 .word-hint.show-hint::after {
-  opacity: 1;
-  visibility: visible;
-  transform: translateX(-50%) translateY(-3px);
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
   .controls {
@@ -860,6 +858,25 @@ function toggleAudioSpeed() {
           <button class="restart-btn" onclick="restartQuiz()">Noch mal üben</button>
         </div>`;
       return;
+
+      // Enable Tap-to-Show for mobile tooltips
+  document.querySelectorAll('.word-hint').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevents instant closing
+      
+      const isAlreadyOpen = el.classList.contains('show-hint');
+      
+      // Close all open tooltips first
+      document.querySelectorAll('.word-hint').forEach(other => {
+        other.classList.remove('show-hint');
+      });
+      
+      // Toggle the clicked one
+      if (!isAlreadyOpen) {
+        el.classList.add('show-hint');
+      }
+    });
+  });
     }
 
     const q = quiz[qIdx];
@@ -992,6 +1009,11 @@ function highlightWords(text) {
     document.getElementById('scoreNum').textContent = 0;
     renderQuestion();
   }
+
+  // Close mobile tooltips when clicking anywhere else
+document.addEventListener('click', () => {
+  document.querySelectorAll('.word-hint').forEach(el => el.classList.remove('show-hint'));
+});
 </script>
 
 </body>
