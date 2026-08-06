@@ -1023,6 +1023,9 @@ function highlightWords(text) {
       document.querySelectorAll('.word-hint').forEach(el => el.classList.remove('show-hint'));
     }
   });
+
+ // Shuffle cards automatically on initial page load
+  shuffleInPlace(quiz);
   
 </script>
 
